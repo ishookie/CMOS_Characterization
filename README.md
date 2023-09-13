@@ -1,10 +1,10 @@
 # Characterizing sCMOS sensors
 This repository contains code to help characterize and identify noise and other secondary effects that impact sCMOS sensors particuarly for use in astronomy. 
 **Split into three main catagories:**
-  1. [CCD vs CMOS](##ccd-vs-cmos)
-  2. [Readout Noise](##readout-noise-(ron))
-  3. [Dark Current](##dark-current)
-  4. [Gain](##gain) 
+  1. [CCD vs CMOS](##-ccd-vs-cmos)
+  2. [Readout Noise](##-readout-noise-(ron))
+  3. [Dark Current](##-dark-current)
+  4. [Gain](##-gain) 
 
 ## CCD vs CMOS 
 CCD (Charge-Coupled Device) has been the most prevalent imaging sensor type for use in astronomy. In recent years CMOS (Complementary Metal-Oxide-Semiconductor) has dominated the consumer market. As a result CCD sensors are more expensive, harder to find and have less support than their CMOS counterparts. This section details how each sensor works as well as their differences in respect to use in astronomy. 
