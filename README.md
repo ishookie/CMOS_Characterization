@@ -2,7 +2,7 @@
 This repository contains code to help characterize and identify noise and other secondary effects that impact sCMOS sensors particuarly for use in astronomy. 
 **Split into three main catagories:**
   1. [CCD vs CMOS](#ccd-vs-cmos)
-  2. [Readout Noise](#readout-noise-(ron))
+  2. [Readout Noise](#readout-noise-ron)
   3. [Dark Current](#dark-current)
   4. [Gain](#gain) 
 
@@ -20,7 +20,7 @@ CMOS sensors are different in that the instead of a single readout circuit and A
 
 ![ccd vs cmos diagram](https://www.testandmeasurementtips.com/wp-content/uploads/2019/05/ccd-cmos-image-sensors.jpg) 
 
-## Readout Noise (RON)
+## Readout Noise RON
 Located in RON_CMOS directory. 
 
 This is the noise introduced through the readout circitry, mainly the preamplifier and ADC. Usually measured in e- RMS. Follows a skewed histogram distribution as opposed to CCD sensors which a follow a guassian one.
