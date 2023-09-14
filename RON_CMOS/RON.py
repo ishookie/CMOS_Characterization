@@ -34,29 +34,22 @@ fitsLoader.test()
 # print(stackedImg[2][3])
 
 
+#may need to copy values to an array of uint32 elements
 stackedOffset = stackedImg + offset
 
 
 
-
+#print for testing
 print(f"no offset: \n{stackedImg[1:6,1:6]}")
 print(f"w/ offset: \n{stackedOffset[1:6,1:6]}")
-
 print(f"min: {np.min(stackedOffset)}")
 print(f"max {np.max(stackedOffset)}")
+
 
 stdev = np.std(stackedOffset)
 final = stdev/math.sqrt(2) 
 
 print(final) 
-
-# #calculate difference of bias frames as a function of their standard deviation
-# #constant added after subtraction so values are all non-zero
-# stdev = np.std(inter)
-# final = stdev/math.sqrt(2)
-
-# print(final)
-
 
 
 
