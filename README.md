@@ -36,6 +36,13 @@ This is the noise introduced through the readout circitry, mainly the preamplifi
 Pixel data is stored as an uint16 ($2^{16} = 65,536$ total values) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
   - need to look into **BSCALE** and **BZERO** which I believe is automatic scaling for fits images and may be the issue of this problem?
   - could also need to introduce an offset before I do the subtractions. How would I choose the offset? would it just be 65,536 to account for a worse case scenario? but then more overflow would occur and I would need to account for that with an array that has uint32.
+
+uh here are some photos I got mainly a histogram and rms of pixel values for 10 different frames
+
+![RMS heatmap + histogram](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/6903e3e3-e148-42a9-bb52-11dc5c2c744b)
+
+![zoom2heatmapCROPPED](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/31bc17ca-99ab-4a0e-9ecc-083bc69fc14b)
+
     
 ## Dark Current
 Dark current is the charge buildup on the sensor as a result of heat. This process is light independent noise. For example a specification of 0.5 e-/p/s means every 1 e-/pixel generated per 2 seconds exposure time. This can be reduced through cooling. 
