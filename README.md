@@ -64,3 +64,16 @@ $G = \frac{\sigma}{\sqrt{2}}$
 6. Find **mean** illumination levels by calculating mean of 100x100 pixel subframe of the **corr** iamge
 7. Find the gain as: 
 $G = \frac{mean}{variance}$
+
+# Setup
+I am using the SBIG STC-428 sCMOS camera from Difraction limited. 
+
+Connect the camera to power, the computer and then plug in the cable from the filter wheel into the "Aux" port. 
+
+Open MaximDL and select the "Toggle Camera Control" icon in the toolbar. Go to the "Setup" tab and under "Camera 1" select "Setup Camera" then in the new window select "Advanced..." select the camera from the Device list on the left should be something like "STC428M-20092901 [USB]" Then hit Ok. 
+
+Then hit the "Setup Filter" option under "Camera 1" select **DL Imaging+FW** from the dropdown list on the right. Then hit Ok and select "Options" on "Camera 1" Make sure the "Use Filter Wheel as Shutter" box is checked. I dont believe the "Filter to use As Shutter" dropdown matters I just have Luminance selected. 
+
+Finally hit "Connect" to set the Cooler temp hit "Cooler" under "Camera 1" 
+
+to take a photo go to the "Expose" tab and hit start when you have selected the desired settings. 
