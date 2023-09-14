@@ -10,7 +10,7 @@ This repository contains code to help characterize and identify noise and other 
 CCD (Charge-Coupled Device) has been the most prevalent imaging sensor type for use in astronomy. In recent years CMOS (Complementary Metal-Oxide-Semiconductor) has dominated the consumer market. As a result CCD sensors are more expensive, harder to find and have less support than their CMOS counterparts. This section details how each sensor works as well as their differences in respect to use in astronomy. 
 
 ### CCD Background 
-CCD sensors consist of an array of pixels. These pixels are light sensitive elements usually made of silicon. When photons strike these pixels electrons are released. These electrons are transfered through the sensor. Where they are amplified to maintain signal integrety as well as reducing (readout noise)[## readout-noise-(ron)). These electrons are then converted to a descrete signal using a single ADC (analog to digital converter) which converts the electrons coming from each pixel to a digital value. 
+CCD sensors consist of an array of pixels. These pixels are light sensitive elements usually made of silicon. When photons strike these pixels electrons are released. These electrons are transfered through the sensor. Where they are amplified to maintain signal integrety as well as reducing (readout noise)[#readout-noise-ron]. These electrons are then converted to a descrete signal using a single ADC (analog to digital converter) which converts the electrons coming from each pixel to a digital value. 
 
 ### CMOS Background 
 CMOS sensors are different in that the instead of a single readout circuit and ADC that reads values from all of the pixels, each pixel has its own readout circitry as well as each row of pixels has its own ADC. This allows for a much faster framerate and more effecient readout process. This is extremely desirable for consumer products like iPhone cameras but for scientific applications poses some issues: 
@@ -30,7 +30,7 @@ This is the noise introduced through the readout circitry, mainly the preamplifi
 2. Subtract bias frames from each other **ADD SUBTRATION ALGO? MULTIPLE FRAMES? OVERFLOW?**
 3. Calculate the standard deviation of the resulting image
 4. Final value is given by:
-   $RON = \frac{stdev}{sqrt(N)}$ 
+   $RON = \frac{\sigma}{\sqrt{N}}$ 
 
 ### Notes to Myself
 Pixel data is stored as an uint16 ($2^{16} = 65,536$ total values) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
@@ -47,3 +47,13 @@ There are three main sources of dark current:
 ## Gain 
 ----add info here----
 
+### Procedure 
+1. Take bias dark frame called "bias" (shutter closed) 
+2. Take two even illumination flat frames called "flat1" and "flat2". (tenitivly gonna attach sensor to lens, then stretch white t shirt over lens with elastic and then point bright light at it)
+3. Calculate the difference frame as $diff = flat2-flat1$
+4. Find **variance** by calculating the standard deviation of a 100x100 pixel subframe of the "diff" frame and then taking:
+$G = \frac{\sigma}{\sqrt{2}}$
+5. Find the bias corrected image: $corr = flat1 - bias$
+6. Find **mean** illumination levels by calculating mean of 100x100 pixel subframe of the **corr** iamge
+7. Find the gain as: 
+$G = \frac{mean}{variance}$
