@@ -33,12 +33,16 @@ This is the noise introduced through the readout circitry, mainly the preamplifi
    $RON = \frac{stdev}{sqrt(N)}$ 
 
 ### Notes to Myself
-Pixel data is stored as an uint16 ($2^{16} = 65,536 total values$) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
-  - need to look into **BSCALE** and **BZERO** which I believe is automatic scaling for fits images and may be the issue of this problem 
+Pixel data is stored as an uint16 ($2^{16} = 65,536$ total values) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
+  - need to look into **BSCALE** and **BZERO** which I believe is automatic scaling for fits images and may be the issue of this problem?
   - could also need to introduce an offset before I do the subtractions. How would I choose the offset? would it just be 65,536 to account for a worse case scenario? but then more overflow would occur and I would need to account for that with an array that has uint32.
     
 ## Dark Current
-Dark current is the charge buildup on the sensor as a result of heat. This process is light independent noise. For example a specification of 0.5 e-/p/s means every 1 e-/pixel generated per 2 seconds exposure time. This can be reduced through cooling. **and???**__ 
+Dark current is the charge buildup on the sensor as a result of heat. This process is light independent noise. For example a specification of 0.5 e-/p/s means every 1 e-/pixel generated per 2 seconds exposure time. This can be reduced through cooling. 
+There are three main sources of dark current: 
+  1. Diffusion
+  2. Thermal generation due to recombination (G-R) of charges
+  3. Leakage currents 
 
 ## Gain 
 ----add info here----
