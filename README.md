@@ -31,17 +31,31 @@ This is the noise introduced through the readout circitry, mainly the preamplifi
 5. This results in a array containing the RON of each pixel
 
 ### Analysis 
-Statistics can t
+A heatmap can be generated from the array of standard deveations of each pixel across N frames (in my case N=10). Additionally a histogram can be created for log(count) vs stDEV of each pixel. the following figures show these stats: 
+![RMS heatmap + histogram](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/6903e3e3-e148-42a9-bb52-11dc5c2c744b)
+
+![zoom2heatmapCROPPED](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/31bc17ca-99ab-4a0e-9ecc-083bc69fc14b)
+
+**I need to redo these cause i think I was doing standard error here not stDEV**
+
+Here is a summary of the test I have done so far. I am yet to calculate the gain I just used an off the shelf value of 5.42 e-/ADU. I did 4 measurments, 2 with both high and low gain at -5.0C and high and low gain at -10.0C:
+
+- -5.0C (Low Gain Mode)
+min = 0
+max =
+mean = 
+
+- -5.0C (High Gain Mode)
+    min = 0
+    max = 7.839
+    mean = 0.836
+
+
+
 ### Notes to Myself
 Pixel data is stored as an uint16 ($2^{16} = 65,536$ total values) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
   - need to look into **BSCALE** and **BZERO** which I believe is automatic scaling for fits images and may be the issue of this problem?
   - could also need to introduce an offset before I do the subtractions. How would I choose the offset? would it just be 65,536 to account for a worse case scenario? but then more overflow would occur and I would need to account for that with an array that has uint32.
-
-uh here are some photos I got mainly a histogram and rms of pixel values for 10 different frames
-
-![RMS heatmap + histogram](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/6903e3e3-e148-42a9-bb52-11dc5c2c744b)
-
-![zoom2heatmapCROPPED](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/31bc17ca-99ab-4a0e-9ecc-083bc69fc14b)
 
     
 ## Dark Current
@@ -52,7 +66,7 @@ There are three main sources of dark current:
   3. Leakage currents 
 
 ## Gain 
-----add info here----
+Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain of 6e-/ADU means there are six electrons per ADU. 
 
 ### Procedure 
 1. Take bias dark frame called "bias" (shutter closed) 
@@ -64,6 +78,14 @@ $G = \frac{\sigma}{\sqrt{2}}$
 6. Find **mean** illumination levels by calculating mean of 100x100 pixel subframe of the **corr** iamge
 7. Find the gain as: 
 $G = \frac{mean}{variance}$
+
+### Notes
+I dont think I am taking flat frames right. My current setup is a peice of paper over the lens with a worktop lamp about 5 feet away also with a sheet of paper over it. I also have the lights in the lab turned off to do this. I took an exposure of 0.5s - anymore than this and saturation occurs. I get this resulting flat frame: 
+
+![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/b489993d-92ff-468a-88b5-58989faa3906)
+
+running the code I got a value of 0.106 e-/ADU. I also used just a single bias frame. I did not make a master one. The value I got is wayyyyyyy too low and most likely very incorrect. 
+
 
 # Setup
 I am using the SBIG STC-428 sCMOS camera from Difraction limited. 
