@@ -1,6 +1,5 @@
 # Characterizing sCMOS sensors
-This repository contains code to help characterize and identify noise and other secondary effects that impact sCMOS sensors particuarly for use in astronomy. 
-**Split into three main catagories:**
+This repository contains code to help characterize and identify noise and other secondary effects that impact sCMOS sensors particuarly for use in astronomy.
   1. [CCD vs CMOS](#ccd-vs-cmos)
   2. [Readout Noise](#readout-noise-ron)
   3. [Dark Current](#dark-current)
@@ -26,12 +25,13 @@ Located in RON_CMOS directory.
 This is the noise introduced through the readout circitry, mainly the preamplifier and ADC. Usually measured in e- RMS. Follows a skewed histogram distribution as opposed to CCD sensors which a follow a guassian one.
 
 ### Procedure 
-1. Take N bias frames
-2. Subtract bias frames from each other **ADD SUBTRATION ALGO? MULTIPLE FRAMES? OVERFLOW?**
-3. Calculate the standard deviation of the resulting image
-4. Final value is given by:
-   $RON = \frac{\sigma}{\sqrt{N}}$ 
+1. Take N bias frames (0s exposure shutter closed) 
+2. For every pixel of coordinate (x,y) calculate: $\frac{\sigma}{\sqrt{N}}$ between the N frames
+3. Repeat for every pixel in the frame
+5. This results in a array containing the RON of each pixel
 
+### Analysis 
+Statistics can t
 ### Notes to Myself
 Pixel data is stored as an uint16 ($2^{16} = 65,536$ total values) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
   - need to look into **BSCALE** and **BZERO** which I believe is automatic scaling for fits images and may be the issue of this problem?
