@@ -89,7 +89,7 @@ class RON:
     """
     def calcRON(self):
         self.calcPixelRMS()
-        self.plotStatistics() 
+        #self.plotStatistics() 
 
 
     def subRON(self, x, y): 
