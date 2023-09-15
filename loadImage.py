@@ -61,6 +61,8 @@ class fitsLoader:
             pixel[i] = newElement
         
         return pixel 
+    
+
 
 
 
