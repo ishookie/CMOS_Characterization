@@ -9,14 +9,18 @@ import sys
 sys.path.append("..")
 import loadImage
 
-#Name of folder containing images
-relativePath = '11.0C'
-# Get path of image folder
-absPath = os.path.firname(__file__)
-fullPath = os.path.join(absPath, relativePath)
-# Create fitsLoader object and load images from folder
-fitsLoader = loadImage.fitsLoader(fullPath)
-fitsLoader.loadImages() 
+class DC: 
+    
+    def __init__(self, relativePath):
+        # Create dir path and load iamges
+        self.absPath = os.path.dirname(__file__)
+        self.fullPath = os.path.join(self.absPath, relativePath)
+        self.fitsLoader = loadImage.fitsLoader(self.fullPath)
+        self.fitsLoader.loadImages()
+        
 
-#-------------------------------------------------
-
+    def stackFrame(self, ronAvg , t): 
+        stackedFrame = np.std(self.fitsLoader.images[0] - self.fitsLoader.images[1])
+        final = ((stackedFrame/math.sqrt(2))**2 - (ronAvg)**2) / t
+        
+        
