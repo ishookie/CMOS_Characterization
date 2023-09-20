@@ -19,16 +19,21 @@ class GAIN:
 
 
     def calcDiff(self):
-        self.diff = self.fitsLoader.images[1] - self.fitsLoader.images[2]
-        print(self.dsiff) 
+        print(self.fitsLoader.images[1].shape)
+        self.diff = self.fitsLoader.images[1].astype(np.int32) - self.fitsLoader.images[2].astype(np.int32)
+        print(self.diff[:5,:5]) 
+
     def calcVariance(self):
-        self.subFrame = self.diff[502:602, 754:854]
+        self.subFrame = self.diff[1004:1204, 1508:1709]
         self.variance = (np.std(self.subFrame))/math.sqrt(2) 
+        
+        #self.variance = (np.std(self.diff))/math.sqrt(2) 
 
     def calcCorrected(self) :
         # flat
-        self.corr = self.fitsLoader.images[1] - self.fitsLoader.images[0] 
-        self.mean = np.mean(self.corr) 
+        self.corr = self.fitsLoader.images[1].astype(np.int32) - self.fitsLoader.images[0].astype(np.int32) 
+        self.mean = np.mean(self.corr[1004:1204, 1508:1709]) 
+        print(f"Corrected: {self.corr[:5,:5]}")
     
     def calcGain(self):
         self.calcDiff() 

@@ -10,8 +10,12 @@ sys.path.append("..")
 import loadImage
 
 class RON:
-    pixelArray = np.empty(10, dtype=np.int32)
     total = 0
+    pixelArray = np.empty(100, dtype=np.int32) 
+
+    # Sigma Threshold for sigma clipping 
+    threshold = 3 
+
     
     """
     Initialize class -> load images frome specified folder called "relativePath" 
@@ -23,6 +27,8 @@ class RON:
         self.fitsLoader = loadImage.fitsLoader(self.fullPath)
         self.fitsLoader.loadImages()
         self.stdArray = np.empty_like(self.fitsLoader.images[0], dtype=np.float64)
+        # length = len(self.fitsLoader.images)
+        # self.pixelArray = np.empty(length, dtype=np.int32) 
 
 
     """
@@ -33,21 +39,19 @@ class RON:
         for i, img in enumerate(self.fitsLoader.images):
             newElement = img[y][x]
             self.pixelArray[i] = newElement
-        # get rid of this probably 
-        # return self.pixelArray 
 
     """
     find rms of pixel array
     """
-    def calcRMS(self):               # Sqrt(N)? - I dont think I need this - uncorrelelated pixels
-        return np.std(self.pixelArray) #/ math.sqrt(len(self.pixelArray))  
+    def calcRMS(self):
+        return np.std(self.pixelArray)  
 
 
     """
     Calculate RMS of each pixel and store in new array called
     "stdArray" 
     """
-    def calcPixelRMS(self):
+    def calcPixelSTD(self):
         rows, cols = self.fitsLoader.images[0].shape
         for y in range(rows - 1):
             for x in range(cols - 1):
@@ -59,23 +63,24 @@ class RON:
     Prints the: min, max and mean values
     Creates a heatmap of RMS pixel values
     Creates a histogram of RMS pixel values vs log(count) 
+    array = array to be plotted
     """
-    def plotStatistics(self):
+    def plotStatistics(self, array):
         
-        print(f"Min Value: {np.min(self.stdArray)}")
-        print(f"Max Value: {np.max(self.stdArray)}")
-        print(f"Mean Value: {(np.sum(self.stdArray))/(np.prod(self.stdArray.shape))}")
+        print(f"Min Value: {np.min(array)}")
+        print(f"Max Value: {np.max(array)}")
+        print(f"Mean Value: {np.mean(array)}")
 
         fig, (ax1, ax2) = plt.subplots(1,2, figsize=(10,5))
 
-        # Creat a heatmap 
-        heatmap = ax1.imshow(self.stdArray, cmap='jet', aspect='auto')
-        ax1.set_title('RMS Heatmap')
-        plt.colorbar(heatmap, ax=ax1)
+        # # Creat a heatmap 
+        # heatmap = ax1.imshow(array, cmap='jet', aspect='auto')
+        # ax1.set_title('RMS Heatmap')
+        # plt.colorbar(heatmap, ax=ax1)
 
-        stdArray_flat = self.stdArray.flatten()
+        stdArray_flat = array.flatten()
         #create
-        ax2.hist(stdArray_flat, bins=200)
+        ax2.hist(stdArray_flat, bins=100)
         ax2.set_title('RMS Histogram')
         ax2.set_xlabel('RMS Values (ADU)')
         ax2.set_ylabel('log(count)')
@@ -88,23 +93,13 @@ class RON:
     Calculate RON of pixels and plot the statistics
     """
     def calcRON(self):
-        self.calcPixelRMS()
+        self.calcPixelSTD()
+        self.sigmaClip() 
         #self.plotStatistics() 
 
-
-    def subRON(self, x, y): 
-        self.subArray = np.empty(5, dtype=np.int32)
-        i=0
-        
-        for n in range(0, len(self.fitsLoader.images) - 1, 2):
-            arr = arr = self.fitsLoader.images[n].astype('int32')
-            newElement = arr[x][y]
-            newElement2 = arr[x][y]
-            print(type(newElement))
-            print(newElement, newElement2)
-            self.subArray[i] = newElement - newElement2
-            i += 1
-        print(self.subArray)
-        # get rid of this probably 
-        # return self.pixelArray 
-
+    def sigmaClip(self):
+        self.mean = np.mean(self.stdArray)
+        self.std = np.std(self.stdArray)
+        self.mask = np.abs(self.stdArray - self.mean) < self.threshold*self.std
+        self.clippedData = self.stdArray[self.mask] 
+        print(self.clippedData.shape)
