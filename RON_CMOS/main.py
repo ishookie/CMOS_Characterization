@@ -18,13 +18,55 @@ def testRON():
     ron.plotStatistics(ron.clippedData) 
 
 def testGain():
-    gain = gain.GAIN('gain_frames')
-    res = gain.calcGain()
-    print(res) 
+    test = gain.GAIN('lightFrames', 'darkFrames')
+    test.doTheThing()
 
-# gain = gain.GAIN('gain_frames')
+
+
+testGain() 
+# #*****THERE IS A BUG WHERE IF YOU HAVE TO IMMEDIETLY CREATE
+# # THE TUBLE WITH TEMPERATURE AND DC VALUE WHEN THE OBJECT IS FIRST
+# # CREATED OR ELSE THE VALUES ARE WRONG I HAVE NO IDEA WHY DO IT IN  
+# # THE ORDER I HAVE HERE **************
+# dc1 = dc.DC('-5Cdc_1min')
+# dct1 = (dc1.stackDarkCurrent(), dc1.t)
+
+# dc25 = dc.DC('-5Cdc_2.5min')
+# dct25 = (dc25.stackDarkCurrent(), dc25.t)
+
+# dc5 = dc.DC('-5Cdc_5min')
+# dct5 = (dc5.stackDarkCurrent(), dc5.t)
+
+# dc75 = dc.DC('-5Cdc_7.5min')
+# dct75 = (dc75.stackDarkCurrent(), dc75.t)
+
+# dc10 = dc.DC('-5Cdc_10min')
+# dct10 = (dc10.stackDarkCurrent(), dc10.t)
+
+# dc30 = dc.DC('-5Cdc_30min')
+# dct30 = (dc30.stackDarkCurrent(), dc30.t)
+# # # Create tubles
+# # # (dc value (e-), Exposure Time (s))
+
+# # This is not pretty :(
+# # append tubles to alist
+# res = [] 
+# res.append(dct1)
+# res.append(dct25)
+# res.append(dct5)
+# res.append(dct75)
+# res.append(dct10)
+# res.append(dct30) 
+# print(res) 
+# dc1.graphDCvsTIME(res)
+# # gain = gain.GAIN('gain_frames')
 # res = gain.calcGain()
 # print(res)
  
-dc = dc.DC('dark_current', 300)
-res = dc.stackDarkCurrent()
+# dc0 = dc.DC('-5Cdc_1min')
+# res = dc0.stackDarkCurrent()
+# print(res) 
+
+# dc1 = dc.DC('-5Cdc_5min')
+# res1 = dc1.stackDarkCurrent()
+# print(res1) 
