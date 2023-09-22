@@ -26,29 +26,23 @@ This is the noise introduced through the readout circitry, mainly the preamplifi
 
 ### Procedure 
 1. Take N bias frames (0s exposure shutter closed) 
-2. For every pixel of coordinate (x,y) calculate: $\frac{\sigma}{\sqrt{N}}$ between the N frames
-3. Repeat for every pixel in the frame
-5. This results in a array containing the RON of each pixel
+2. For every pixel of coordinate (x,y) calculate: $\sigma$ between the N frames
+3. Repeat for every pixel in the frame. This results in an array containing the RON of each pixel
+4. Remove "hot" pixels by performing 3-sigma-clipping on the RON array. 
 
 ### Analysis 
-A heatmap can be generated from the array of standard deveations of each pixel across N frames (in my case N=10). Additionally a histogram can be created for log(count) vs stDEV of each pixel. the following figures show these stats: 
-![RMS heatmap + histogram](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/6903e3e3-e148-42a9-bb52-11dc5c2c744b)
+Currently I have not been able to get a reasonable number for the gain so to convert the RON noise figures from ADU to e- I will be using the stock gain value taken from diffraction's website which is **1.2 e-/ADU** on the high gain mode. 
 
-![zoom2heatmapCROPPED](https://github.com/aidanmacnichol/CMOS_Characerization/assets/108359181/31bc17ca-99ab-4a0e-9ecc-083bc69fc14b)
+For N = 100 I got the following results: 
 
-**I need to redo these cause i think I was doing standard error here not stDEV**
+**-5.0C (High Gain Mode)**
+Min Value: 0.908 ADU
+Max Value: 2.448 ADU
+Mean Value: 1.490 ADU
 
-Here is a summary of the test I have done so far. I am yet to calculate the gain I just used an off the shelf value of 5.42 e-/ADU. I did 4 measurments, 2 with both high and low gain at -5.0C and high and low gain at -10.0C:
+RON = 1.490 ADU * 1.2 e-/ADU = **1.778 e-**
 
-- -5.0C (Low Gain Mode)
-min = 0
-max =
-mean = 
-
-- -5.0C (High Gain Mode)
-    min = 0
-    max = 7.839
-    mean = 0.836
+$\text{Percent Error} = \frac{1.788-1.9}{1.9} = \text{5.895 Percent}$
 
 
 
