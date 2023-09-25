@@ -21,6 +21,7 @@ This method loads FITS images from the directory specified during object initial
 ```python
 fits_loader = fitsLoader('/path/to/folder')
 fits_loader.loadImages()
+```
 
 # RON Class Documentation
 
