@@ -63,6 +63,10 @@ There are three main sources of dark current:
 Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain of 6e-/ADU means there are six electrons per ADU. 
 
 ### Procedure 
+1. 
+
+
+------Old Procedure---------------------------------------
 1. Take bias dark frame called "bias" (shutter closed) 
 2. Take two even illumination flat frames called "flat1" and "flat2". (tenitivly gonna attach sensor to lens, then stretch white t shirt over lens with elastic and then point bright light at it)
 3. Calculate the difference frame as $diff = flat2-flat1$
