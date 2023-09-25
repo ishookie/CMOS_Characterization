@@ -8,6 +8,14 @@ import matplotlib.pyplot as plt
 sys.path.append("..")
 import loadImage
 
+"""
+take diff frames D0 - D1 + D2 - D3.......
+calc cariance of diff frames
+-> do this with a bumch of exp times (object for each)
+-> graph accordingly 
+
+"""
+
 class DC: 
     def __init__(self, relativePath):
         # Create dir path and load iamges
@@ -16,7 +24,7 @@ class DC:
         self.fitsLoader = loadImage.fitsLoader(self.fullPath)
         self.fitsLoader.loadImages()
         self.t = round(self.fitsLoader.getHeaderInfo('EXPTIME'), 0)
-        self.diff = np.empty_like(self.fitsLoader.images[0], dtype=np.float64)
+        # self.diff = np.empty_like(self.fitsLoader.images[0], dtype=np.float64)
 
     def diffFrame(self):
         """
@@ -25,7 +33,6 @@ class DC:
         """
         for n in range(0, len(self.fitsLoader.images) - 1, 2):
             self.diff += self.fitsLoader.images[n].astype(np.float64) - self.fitsLoader.images[n+1].astype(np.float64)
-            # IS IT REALLY NECESSARY TO MAKE IT A FLOAT?!?!?!??!?!?!?!?!??!
         self.variance = np.std(self.diff) / math.sqrt(2)
 
     def stackDarkCurrent(self):
