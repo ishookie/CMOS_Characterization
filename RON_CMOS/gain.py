@@ -27,8 +27,8 @@ class GAIN:
         self.meanVals = []
         self.varVals = []
 
+#----------- FIRST METHOD ----------------------------------------------------------------------------
     def resFrame(self): 
-
         for n in range(len(self.fitsLoaderLight.images)):
             self.resArray.append(self.fitsLoaderLight.images[n].astype(np.int32) - self.fitsLoaderDark.images[n].astype(np.int32))
         print(f"resFrame: {self.resArray[0][:5,:5]}")
@@ -74,7 +74,8 @@ class GAIN:
         # Plot data points and line of best fit
         plt.scatter(self.meanVals, self.varVals, label='Data Points')
         plt.scatter(x_line, y_line, color='red', label=f'Fit: y = {slope:.2f}x + {intercept:.2f}', s=0.1)
-
+        plt.xlabel("Mean")
+        plt.ylabel("Variance")
         # Print gain which is 1/slope 
         gain = 1/slope 
         print(f"gain: {gain}")
@@ -82,27 +83,41 @@ class GAIN:
         # Show the plot
         plt.legend() 
         plt.show()
-        
 
-    # def calcDiff(self):
-    #     print(self.fitsLoader.images[1].shape)
-    #     self.diff = self.fitsLoader.images[1].astype(np.int32) - self.fitsLoader.images[2].astype(np.int32)
-    #     print(self.diff[:5,:5]) 
+#----------- SECOND METHOD ----------------------------------------------------------------------------     
 
-    # def calcVariance(self):
-    #     self.subFrame = self.diff[1004:1204, 1508:1709]
-    #     self.variance = (np.std(self.subFrame))/math.sqrt(2) 
-        
-    #     #self.variance = (np.std(self.diff))/math.sqrt(2) 
 
-    # def calcCorrected(self) :
-    #     # flat
-    #     self.corr = self.fitsLoader.images[1].astype(np.int32) - self.fitsLoader.images[0].astype(np.int32) 
-    #     self.mean = np.mean(self.corr[1004:1204, 1508:1709]) 
-    #     print(f"Corrected: {self.corr[:5,:5]}")
+    def findMean(self):
+        #3-D array of light images and calc mean
+        self.stackedLight = np.stack(self.fitsLoaderLight.images, axis = 0)
+        self.lightMean = np.mean(self.stackedLight, axis = 0)
+
+        print(f"Light Mean: {self.lightMean[:5, :5]}")
+        #3-D array of dark images and calc mean
+        self.stackedDark = np.stack(self.fitsLoaderDark.images, axis = 0)
+        self.darkMean = np.mean(self.stackedDark, axis = 0)
+        print(f"Dark Mean: {self.darkMean[:5, :5]}")
+
+        #stDEV of dark frames: 
+        self.darkSTD = np.std(self.stackedDark, axis = 0)
+        print(f"stDev Min: {np.min(self.darkSTD)} Max: {np.max(self.darkSTD)}")
+        print(f"Dark stDEV: {self.darkSTD[:5, :5]}")
+
+
     
-    # def calcGain(self):
-    #     self.calcDiff() 
-    #     self.calcVariance()
-    #     self.calcCorrected()
-    #     return self.mean/self.variance
+    def calcPixelWiseGain(self):
+        # Add a constant here (300) to avoid divide by 0
+        self.pixelGain = np.var(self.lightMean - self.darkMean)
+        self.meanie = np.mean(self.lightMean - self.darkMean)
+        self.testTwo = self.meanie / self.pixelGain 
+
+        print(np.mean(self.testTwo))
+        # print()
+
+        # self.pixelGain = (self.lightMean - self.darkMean) / (self.darkSTD) 
+        # self.finalGain = np.mean(self.pixelGain)
+        # print(self.finalGain)
+
+    def pixelWiseGain(self):
+        self.findMean()
+        self.calcPixelWiseGain() 
