@@ -8,48 +8,45 @@ import matplotlib.pyplot as plt
 sys.path.append("..")
 import loadImage
 
-"""
-take diff frames D0 - D1 + D2 - D3.......
-calc cariance of diff frames
--> do this with a bumch of exp times (object for each)
--> graph accordingly 
-
-"""
-
 class DC: 
     def __init__(self, relativePath):
         # Create dir path and load iamges
         self.absPath = os.path.dirname(__file__)
         self.fullPath = os.path.join(self.absPath, relativePath)
         self.fitsLoader = loadImage.fitsLoader(self.fullPath)
-        self.fitsLoader.loadImages()
-        self.t = round(self.fitsLoader.getHeaderInfo('EXPTIME'), 0)
-        # self.diff = np.empty_like(self.fitsLoader.images[0], dtype=np.float64)
+        # Load images with exposure time as key -> keyImages
+        self.fitsLoader.keyImages('EXPTIME')
+        self.diffDict = {} 
+        self.darkCurrents = {}
+
+        self.diff = [] 
 
     def diffFrame(self):
         """
         Takes an even number of dark frames "D" and subtracts them following this formula:
         D = D0 - D1 + D2 - D3 + ... + Dn - Dn-1
+        Difference frames are stored in a dictionary with exposure time keys called
+        diffDict
+        Also calcualtes the overall dark currents with and stores them in a dictionary
+        with key values being exposure time
         """
-        for n in range(0, len(self.fitsLoader.images) - 1, 2):
-            self.diff += self.fitsLoader.images[n].astype(np.float64) - self.fitsLoader.images[n+1].astype(np.float64)
-        self.variance = np.std(self.diff) / math.sqrt(2)
+        #Loop through image data for each exposure time key 
+        for expTime, dataList in self.fitsLoader.keyImages.items():
+            diff = 0 
+            #Calcualate difference
+            for n in range(0, len(dataList) - 1, 2):
+                diff += dataList[n].astype(np.float64) - dataList[n+1].astype(np.float64)
+            
+            self.diffDict[expTime] = diff 
+            # Calc dark current here - using 1.2 as stock gain value
+            self.darkCurrents[expTime] = (1.2 * np.var(diff)) / expTime 
 
-    def stackDarkCurrent(self):
-        self.diffFrame() 
-        #Quadtrature differnce IM BAD AT STATS THIS IS BAD DONT USE KEEP COMMENTED
-        # self.dc = ((1.2 * self.variance)**2 - (1.788**2)) / self.t
-        dc = (1.2 * self.variance) / self.t
-        print(dc)
-        return dc
-    
-    def logarithmic_fit(self, x, a, b):
-        return a * np.log(x) + b
 
-    def graphDCvsTIME(self, data):
+    def graphDCvsTIME(self):
         
-        values, times = zip(*data) 
-
+        values = list(self.darkCurrents.keys())
+        times = list(self.darkCurrents.values())
+        
 
         values = np.array(values)
         times = np.array(times)
@@ -66,16 +63,24 @@ class DC:
 
         fittedCurve = self.logarithmic_fit(times, a, b)
 
-        plt.plot(times, fittedCurve, color='red', label='logoarithmic Fit')
-
         plt.xlabel('Time (s)')
         plt.ylabel('Dark Current (e-)')
+        plt.grid(True)
+        
+        coeff, _ = np.polyfit(np.log(times), np.log(values), 1)
+        fittedValues = np.exp(coeff[1]) * np.power(times, coeff[0])
+        
+        plt.plot(times, fittedValues, 'r--', label='logoarithmic Fit')
+        
         plt.legend()
-
         plt.show() 
 
         
-
+    def logarithmic_fit(self, x, a, b):
+        """
+        Helper for graphing function - logmarithic fit
+        """
+        return a * np.log(x) + b
 
 
 
