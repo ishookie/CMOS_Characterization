@@ -1,7 +1,7 @@
 import os
 import numpy as np 
 from astropy.io import fits
-from collections import defaultdict 
+from collections import OrderedDict
 
 
 class fitsLoader:
@@ -46,10 +46,10 @@ class fitsLoader:
             return result
         
 
-    def sortImages(self, str):
+    def sortImages(self, head):
         """
         Similar to loadImages but stores image data in a dictionary 
-        where the key is the given str argument
+        where the key is the given header string argument
         used in dc with exposure time as the key
         """
         for filename in os.listdir(self.folderPath):
@@ -57,12 +57,37 @@ class fitsLoader:
                 filePath = os.path.join(self.folderPath, filename)
                 try:
                     with fits.open(filePath) as hdul:
-                        key = hdul.get(str) 
+                        header = hdul[0].header
+                        key = header.get(head)
+                        data = hdul[0].data
+
                         if key not in self.keyImages:
                             self.keyImages[key] = []
-                            
-                        self.keyImages[key].append(hdul[0].data)
-                               
+
+                        self.keyImages[key].append(data)
                 except Exception as e:
                     print(f"Error reading {filePath}: {str(e)}")
 
+        self.keyImages = OrderedDict(sorted(self.keyImages.items()))
+
+
+
+    def printDict(self):
+        """
+        Helper function to print dictionary
+        """
+        for key, data_list in self.keyImages.items():
+            print(f"Exposure Time: {key}")
+            print(f"Number of Arrays: {len(data_list)}")
+        
+        # Iterate through each numpy array for the current exposure time
+            for i, data in enumerate(data_list):
+                print(f"Array {i + 1}")
+                print(f"Data Type: {data.dtype}")
+                print(f"Data Shape: {data.shape}")
+                # Print a small portion of the data (e.g., the first 5x5 elements)
+                small_portion = data[:5, :5]  # Adjust the indexing as needed
+                print("Small Portion of Data:")
+                print(small_portion)
+                print("-" * 20)  # Separator between arrays
+            print("=" * 30)  # Separator between exposure times
