@@ -9,13 +9,12 @@ import dc
 
 def testRON():
     st = time.time() 
-    ronObject = ron.RON('-10.0C_highGain')
+    ronObject = ron.RON('6443BiasFrames')
     #ron.subRON(2,2)
     ronObject.calcRON()   
     et = time.time()
     elapsed_time = et - st
-    print('Execution time:', elapsed_time, 'seconds')
-    # ron.plotStatistics(ron.clippedData) 
+    print('Execution time:', elapsed_time, 'seconds') 
 
 def testGain():
     test = gain.GAIN('lightFrames', 'darkFrames')
@@ -26,8 +25,13 @@ def testPixelWiseGain():
     test = gain.GAIN('lightFrames', 'darkFrames')
     test.pixelWiseGain() 
 
-# testGain()
-testRON()  
+def testDC():
+    darkCurrent = dc.DC('dcTest')
+    darkCurrent.diffFrame()
+    darkCurrent.graphDCvsTIME()
+
+
+testRON() 
 # #*****THERE IS A BUG WHERE IF YOU HAVE TO IMMEDIETLY CREATE
 # # THE TUBLE WITH TEMPERATURE AND DC VALUE WHEN THE OBJECT IS FIRST
 # # CREATED OR ELSE THE VALUES ARE WRONG I HAVE NO IDEA WHY DO IT IN  
