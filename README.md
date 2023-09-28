@@ -36,9 +36,9 @@ Currently I have not been able to get a reasonable number for the gain so to con
 For N = 100 I got the following results: 
 
 **-5.0C (High Gain Mode)**
-Min Value: 0.908 ADU
-Max Value: 2.448 ADU
-Mean Value: 1.490 ADU
+- Min Value: 0.908 ADU
+- Max Value: 2.448 ADU
+- **Mean Value: 1.490 ADU**
 
 RON = 1.490 ADU * 1.2 e-/ADU = **1.778 e-**
 
