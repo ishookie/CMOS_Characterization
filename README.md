@@ -92,12 +92,25 @@ $G = \frac{\sigma}{\sqrt{2}}$
 7. Find the gain as: 
 $G = \frac{mean}{variance}$
 
+
+### Analysis 
+I took a series of flat images all at -5.0C. 2 frames were taken at each exposure. The exposure times are as follows:
+- 0.5s
+- 1.0s
+- 2.0s 
+- 15.0s
+
+The resulting photon transfer curve (PTC) is shown below: 
+
+![meanVSVariance](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/1e6a95ef-2d60-481f-a1f3-8630b4138cd8)
+
+Taking the inverse of the slope provides the gain value of: **0.676**
+
+
 ### Notes
-I dont think I am taking flat frames right. My current setup is a peice of paper over the lens with a worktop lamp about 5 feet away also with a sheet of paper over it. I also have the lights in the lab turned off to do this. I took an exposure of 0.5s - anymore than this and saturation occurs. I get this resulting flat frame: 
+flat frames where pretty good actually (Here is a 2s one): 
+![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5e7d49ac-1cf8-47df-a022-8ec6b1ea1080)
 
-![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/b489993d-92ff-468a-88b5-58989faa3906)
-
-running the code I got a value of 0.106 e-/ADU. I also used just a single bias frame. I did not make a master one. The value I got is wayyyyyyy too low and most likely very incorrect. 
 
 
 # Setup
