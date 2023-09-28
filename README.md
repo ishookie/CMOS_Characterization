@@ -47,17 +47,17 @@ $\text{Percent Error} = \frac{1.788-1.9}{1.9} = \text{5.895 Percent}$
 The bottleneck of this calucation is the size of memory. During the subtraction the result is a numpy 3D array of size n x 2208 x 3216. With a array of 64 bit floats. The computer I am using has 32 GB RAM -> assuming 31GB usage the most images I can compile is 545. 
 
 Running the calculation for **545 Frames at -10.0C** I get the following results:
-Min: 1.194192382537768
-Max: 2.5905072964950713
-**Mean: 1.497172421554032**
+- Min: 1.194192382537768
+- Max: 2.5905072964950713
+- **Mean: 1.497172421554032**
 
 ![ron-545Frames](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/74564315-9889-4f66-bb0b-4374178d7279)
 
 In order to fit more images into memory a possible solution is to type the data as a 32 bit float. This would result in loss of precision. 
 Running the calculation for the same **545 frames at -10.0C** I get the following results:
-Min: 1.194192886352539
-Max: 2.590508460998535
-**Mean: 1.4971725940704346**
+- Min: 1.194192886352539
+- Max: 2.590508460998535
+- **Mean: 1.4971725940704346**
 
 ![545-float32RON](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/1ba7eb21-4778-4ab4-b7e6-8e2814d15e80)
 
