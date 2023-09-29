@@ -72,7 +72,16 @@ Dark current is the charge buildup on the sensor as a result of heat. This proce
 There are three main sources of dark current: 
   1. Diffusion
   2. Thermal generation due to recombination (G-R) of charges
-  3. Leakage currents 
+  3. Leakage currents
+
+### Procedure
+
+### Analysis 
+At each exposure time 8 frames were taken. Performing an analysis on them resulted in this chart of Dark Current vs Time: 
+
+![DCvsTimeGood](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/7033eeb1-1263-4e31-9255-ee137b93ce4e)
+
+
 
 ## Gain 
 Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain of 6e-/ADU means there are six electrons per ADU. 
