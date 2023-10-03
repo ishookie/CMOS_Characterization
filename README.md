@@ -77,10 +77,15 @@ There are three main sources of dark current:
 ### Procedure
 
 ### Analysis 
-At each exposure time 8 frames were taken. Performing an analysis on them resulted in this chart of Dark Current vs Time: 
+The sensor used clearly has areas more succeptable to dark current than others. A exagerated image showing this spots is shown below: 
 
-![DCvsTimeGood](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/7033eeb1-1263-4e31-9255-ee137b93ce4e)
+![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5886d752-cd93-4dfb-9813-12ff304b60e6)
 
+At each exposure time 10 frames were taken. Performing an analysis on them resulted in this chart of Dark Current vs Time: 
+
+![DarkCurrentvsTime](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/27039dd2-2dfd-43f0-86b5-ad786a3225d4)
+
+The resulting DC value is 0.17 e-/p/s
 
 
 ## Gain 
