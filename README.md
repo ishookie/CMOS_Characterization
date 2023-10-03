@@ -75,18 +75,20 @@ There are three main sources of dark current:
   3. Leakage currents
 
 ### Procedure
-
+1. Take N dark frames at multiple different exposure times, same temperature
+2. Average N frames and subtract a master bias from them
+3. Graph Dark Current Count vs Time. Slope is the dark current
+4. 
 ### Analysis 
-The sensor used clearly has areas more succeptable to dark current than others. A exagerated image showing this spots is shown below: 
+10 frames were taken at each exposure time: 1s, 10s, 60s, 120s and 240s and the following graph was obtained:
 
-![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5886d752-cd93-4dfb-9813-12ff304b60e6)
-
-At each exposure time 10 frames were taken. Performing an analysis on them resulted in this chart of Dark Current vs Time: 
-
-![DarkCurrentvsTime](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/27039dd2-2dfd-43f0-86b5-ad786a3225d4)
+![DCvsTimeAdjusted](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/cf8eb523-6e39-4065-8e16-84db7437395f)
 
 The resulting DC value is 0.17 e-/p/s
 
+The sensor used clearly has areas more succeptable to dark current than others. A exagerated image showing this spots is shown below: 
+
+![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5886d752-cd93-4dfb-9813-12ff304b60e6)
 
 ## Gain 
 Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain of 6e-/ADU means there are six electrons per ADU. 
