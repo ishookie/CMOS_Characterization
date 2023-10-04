@@ -94,33 +94,20 @@ The sensor used clearly has areas more succeptable to dark current than others. 
 Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain of 6e-/ADU means there are six electrons per ADU. 
 
 ### Procedure 
-1. Take flats at the same exposure time but varying luminance time. Also take darks and subtract darks then calculate mean ad
-
-
-------Old Procedure---------------------------------------
-1. Take bias dark frame called "bias" (shutter closed) 
-2. Take two even illumination flat frames called "flat1" and "flat2". (tenitivly gonna attach sensor to lens, then stretch white t shirt over lens with elastic and then point bright light at it)
-3. Calculate the difference frame as $diff = flat2-flat1$
-4. Find **variance** by calculating the standard deviation of a 100x100 pixel subframe of the "diff" frame and then taking:
-$G = \frac{\sigma}{\sqrt{2}}$
-5. Find the bias corrected image: $corr = flat1 - bias$
-6. Find **mean** illumination levels by calculating mean of 100x100 pixel subframe of the **corr** iamge
-7. Find the gain as: 
-$G = \frac{mean}{variance}$
-
+1. Take N flats at the same exposure time but varying luminance
+2. Take N darks at the same exposure time
+3. Create Master Dark by taking the mean between N frames
+4. For each flat subtract the master dark, then calculate the mean and variance of a qxq area of the image where it is "flattest" (avoid edges due to weird edge effects)
+5. Plot Variance vs Mean and calculate the slope, this is the gain. 
 
 ### Analysis 
-I took a series of flat images all at -5.0C. 2 frames were taken at each exposure. The exposure times are as follows:
-- 0.5s
-- 1.0s
-- 2.0s 
-- 15.0s
+I took a series of flat images all at -5.0C. The exposure time was at 0.2 seconds. My lightsource was my laptop screen with a white image fullscreened. I increased the brightness for each photo and took 6 in total. 
 
-The resulting photon transfer curve (PTC) is shown below: 
+The resulting photon transfer curve (PTC) for the central 300x300 region is shown below: 
 
-![meanVSVariance](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/1e6a95ef-2d60-481f-a1f3-8630b4138cd8)
+![Photon Transfer Curve  Center 300x300](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/c8048731-f0a1-434a-9176-e98bd1ae119b
 
-Taking the inverse of the slope provides the gain value of: **0.676**
+From the slope we can see that the gain is 0.83 e-/ADU
 
 
 ### Notes
