@@ -105,9 +105,10 @@ I took a series of flat images all at -5.0C. The exposure time was at 0.2 second
 
 The resulting photon transfer curve (PTC) for the central 300x300 region is shown below: 
 
-![Photon Transfer Curve  Center 300x300](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/c8048731-f0a1-434a-9176-e98bd1ae119b
+![Photon Transfer Curve  Center 300x300](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5550794d-743d-42a6-bab5-48c6b74a0924)
 
-From the slope we can see that the gain is 0.83 e-/ADU
+
+From the slope we can see that the gain is **0.83 e-/ADU**
 
 
 ### Notes
