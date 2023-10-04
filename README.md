@@ -94,7 +94,7 @@ The sensor used clearly has areas more succeptable to dark current than others. 
 Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain of 6e-/ADU means there are six electrons per ADU. 
 
 ### Procedure 
-1. 
+1. Take flats at the same exposure time but varying luminance time. Also take darks and subtract darks then calculate mean ad
 
 
 ------Old Procedure---------------------------------------
