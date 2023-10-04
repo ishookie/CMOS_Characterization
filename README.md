@@ -112,8 +112,9 @@ From the slope we can see that the gain is **0.83 e-/ADU**
 
 
 ### Notes
-flat frames where pretty good actually (Here is a 2s one): 
-![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5e7d49ac-1cf8-47df-a022-8ec6b1ea1080)
+flat frames where pretty good actually (Here is one with a mean luminance ~1000): 
+![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/72abdfb9-b631-494c-a5bf-414405d5347c)
+
 
 
 
