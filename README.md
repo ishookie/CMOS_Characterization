@@ -110,6 +110,12 @@ The resulting photon transfer curve (PTC) for the central 300x300 region is show
 
 From the slope we can see that the gain is **0.83 e-/ADU**
 
+I also created a heat map to look at the spacial variance of gain values across the image. 
+This works by finding the gain between all n images for a 48x48 pixel block. It then repeates this across the entire image and plots it as a heat map. 
+
+![gainHeatMap](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/b014805a-1b95-4119-ae74-7069fed701f4)
+
+
 
 ### Notes
 flat frames where pretty good actually (Here is one with a mean luminance ~1000): 
