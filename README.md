@@ -105,10 +105,11 @@ I took a series of flat images all at -5.0C. The exposure time was at 0.2 second
 
 The resulting photon transfer curve (PTC) for the central 300x300 region is shown below: 
 
-![Photon Transfer Curve  Center 300x300](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5550794d-743d-42a6-bab5-48c6b74a0924)
+![PTC(Good)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/cdfe7b4c-a74f-434b-a4b1-3ccf8ad0efbb)
 
+From the inverse slope we can see that the gain is **1.2 e-/ADU**
 
-From the slope we can see that the gain is **0.83 e-/ADU**
+The RON can also be extracted from the PTC as the $\sqrt{\text{y-intercept}}$ which is **1.6**
 
 I also created a heat map to look at the spacial variance of gain values across the image. 
 This works by finding the gain between all n images for a 48x48 pixel block. It then repeates this across the entire image and plots it as a heat map. 
