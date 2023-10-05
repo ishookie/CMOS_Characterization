@@ -17,8 +17,8 @@ def testRON():
     print('Execution time:', elapsed_time, 'seconds') 
 
 def testGain():
-    test = gain.GAIN('lightFrames', 'darkFrames')
-    test.doTheThing()
+    test = gain.GAIN('flatFrames', '0.2Dark')
+    test.spacialVariation()
 
 
 def testPixelWiseGain():
@@ -26,12 +26,13 @@ def testPixelWiseGain():
     test.pixelWiseGain() 
 
 def testDC():
-    darkCurrent = dc.DC('dcTest')
-    darkCurrent.diffFrame()
+    darkCurrent = dc.DC('dcNew', '-5.0C_highGain')
+    darkCurrent.fullFrameDC()
     darkCurrent.graphDCvsTIME()
 
+testGain() 
 
-testRON() 
+# testRON() 
 # #*****THERE IS A BUG WHERE IF YOU HAVE TO IMMEDIETLY CREATE
 # # THE TUBLE WITH TEMPERATURE AND DC VALUE WHEN THE OBJECT IS FIRST
 # # CREATED OR ELSE THE VALUES ARE WRONG I HAVE NO IDEA WHY DO IT IN  

@@ -31,7 +31,7 @@ class RON:
         # Stack frames, subtract individual pixels from mean
         self.stackedArray = np.stack(self.fitsLoader.images, axis = 0)
         self.meanBias = np.mean(self.stackedArray, axis=0)
-        self.subArray = self.stackedArray - self.meanBias
+        self.subArray = self.stackedArray.astype(np.float32) - self.meanBias.astype(np.float32) 
         # Calc std of subtracted frames
         self.stdArray = np.std(self.subArray, axis = 0)
         # clip data
@@ -39,27 +39,25 @@ class RON:
         self.plotStatistics()
 
     def plotStatistics(self):
-            """
-            Prints: Min, Max and Mean values.
-            Creates a histogram of RMS pixel values vs log(count)
-            array = array to be plotted
-            """                
-            print(f"Min Value: {np.min(self.clipped)}")
-            print(f"Max Value: {np.max(self.clipped)}")
-            print(f"Mean Value: {np.mean(self.clipped)}")
-
-            stdArray_flat = self.clipped.flatten()
-            plt.hist(stdArray_flat, bins=100)
-            plt.title('RON Histogram')
-            plt.xlabel('RON Values (ADU)')
-            plt.ylabel('log(count)')
-            plt.yscale('log')
-            plt.show() 
-
-            # # Create a heatmap (not really usefull tbh but leaving in) 
-            # heatmap = ax1.imshow(array, cmap='jet', aspect='auto')
-            # ax1.set_title('RMS Heatmap')
-            # plt.colorbar(heatmap, ax=ax1)
+        """
+        Prints: Min, Max and Mean values.
+        Creates a histogram of RMS pixel values vs log(count)
+        array = array to be plotted
+        """                
+        print(f"Min Value: {np.min(self.clipped)}")
+        print(f"Max Value: {np.max(self.clipped)}")
+        print(f"Mean Value: {np.mean(self.clipped)}")
+        stdArray_flat = self.clipped.flatten()
+        plt.hist(stdArray_flat, bins=100)
+        plt.title('RON Histogram')
+        plt.xlabel('RON Values (ADU)')
+        plt.ylabel('log(count)')
+        plt.yscale('log')
+        plt.show() 
+        # # Create a heatmap (not really usefull tbh but leaving in) 
+        # heatmap = ax1.imshow(array, cmap='jet', aspect='auto')
+        # ax1.set_title('RMS Heatmap')
+        # plt.colorbar(heatmap, ax=ax1)
 
     def sampleSize(self, zScore=1.96, MOE=0.02):
         """"
@@ -73,3 +71,11 @@ class RON:
         MOE *= np.mean(self.clipped)
         n = (zScore**2 * std**2) / MOE**2 
         print(n) 
+
+    def marginOfError(self, zScore=1.96, n=545):
+        
+        self.calcRON()
+        std = np.mean(np.sqrt(self.clipped))
+        MOE = np.sqrt((zScore**2 * std**2) / n)
+        MOE /= np.mean(self.clipped) 
+        print(MOE) 
