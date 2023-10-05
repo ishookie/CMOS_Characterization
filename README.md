@@ -36,15 +36,30 @@ Currently I have not been able to get a reasonable number for the gain so to con
 For N = 100 I got the following results: 
 
 **-5.0C (High Gain Mode)**
-Min Value: 0.908 ADU
-Max Value: 2.448 ADU
-Mean Value: 1.490 ADU
+- Min Value: 0.908 ADU
+- Max Value: 2.448 ADU
+- **Mean Value: 1.490 ADU**
 
 RON = 1.490 ADU * 1.2 e-/ADU = **1.778 e-**
 
 $\text{Percent Error} = \frac{1.788-1.9}{1.9} = \text{5.895 Percent}$
 
+The bottleneck of this calucation is the size of memory. During the subtraction the result is a numpy 3D array of size n x 2208 x 3216. With a array of 64 bit floats. The computer I am using has 32 GB RAM -> assuming 31GB usage the most images I can compile is 545. 
 
+Running the calculation for **545 Frames at -10.0C** I get the following results:
+- Min: 1.194192382537768
+- Max: 2.5905072964950713
+- **Mean: 1.497172421554032**
+
+![ron-545Frames](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/74564315-9889-4f66-bb0b-4374178d7279)
+
+In order to fit more images into memory a possible solution is to type the data as a 32 bit float. This would result in loss of precision. 
+Running the calculation for the same **545 frames at -10.0C** I get the following results:
+- Min: 1.194192886352539
+- Max: 2.590508460998535
+- **Mean: 1.4971725940704346**
+
+![545-float32RON](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/1ba7eb21-4778-4ab4-b7e6-8e2814d15e80)
 
 ### Notes to Myself
 Pixel data is stored as an uint16 ($2^{16} = 65,536$ total values) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
@@ -57,32 +72,56 @@ Dark current is the charge buildup on the sensor as a result of heat. This proce
 There are three main sources of dark current: 
   1. Diffusion
   2. Thermal generation due to recombination (G-R) of charges
-  3. Leakage currents 
+  3. Leakage currents
+
+### Procedure
+1. Take N dark frames at multiple different exposure times, same temperature
+2. Average N frames and subtract a master bias from them
+3. Graph Dark Current Count vs Time. Slope is the dark current
+4. 
+### Analysis 
+10 frames were taken at each exposure time: 1s, 10s, 60s, 120s and 240s and the following graph was obtained:
+
+![DCvsTimeAdjusted](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/cf8eb523-6e39-4065-8e16-84db7437395f)
+
+The resulting DC value is 0.17 e-/p/s
+
+The sensor used clearly has areas more succeptable to dark current than others. A exagerated image showing this spots is shown below: 
+
+![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5886d752-cd93-4dfb-9813-12ff304b60e6)
 
 ## Gain 
 Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain of 6e-/ADU means there are six electrons per ADU. 
 
 ### Procedure 
-1. 
+1. Take N flats at the same exposure time but varying luminance
+2. Take N darks at the same exposure time
+3. Create Master Dark by taking the mean between N frames
+4. For each flat subtract the master dark, then calculate the mean and variance of a qxq area of the image where it is "flattest" (avoid edges due to weird edge effects)
+5. Plot Variance vs Mean and calculate the slope, this is the gain. 
+
+### Analysis 
+I took a series of flat images all at -5.0C. The exposure time was at 0.2 seconds. My lightsource was my laptop screen with a white image fullscreened. I increased the brightness for each photo and took 6 in total. 
+
+The resulting photon transfer curve (PTC) for the central 300x300 region is shown below: 
+
+![Photon Transfer Curve  Center 300x300](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5550794d-743d-42a6-bab5-48c6b74a0924)
 
 
-------Old Procedure---------------------------------------
-1. Take bias dark frame called "bias" (shutter closed) 
-2. Take two even illumination flat frames called "flat1" and "flat2". (tenitivly gonna attach sensor to lens, then stretch white t shirt over lens with elastic and then point bright light at it)
-3. Calculate the difference frame as $diff = flat2-flat1$
-4. Find **variance** by calculating the standard deviation of a 100x100 pixel subframe of the "diff" frame and then taking:
-$G = \frac{\sigma}{\sqrt{2}}$
-5. Find the bias corrected image: $corr = flat1 - bias$
-6. Find **mean** illumination levels by calculating mean of 100x100 pixel subframe of the **corr** iamge
-7. Find the gain as: 
-$G = \frac{mean}{variance}$
+From the slope we can see that the gain is **0.83 e-/ADU**
+
+I also created a heat map to look at the spacial variance of gain values across the image. 
+This works by finding the gain between all n images for a 48x48 pixel block. It then repeates this across the entire image and plots it as a heat map. 
+
+![gainHeatMap](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/b014805a-1b95-4119-ae74-7069fed701f4)
+
+
 
 ### Notes
-I dont think I am taking flat frames right. My current setup is a peice of paper over the lens with a worktop lamp about 5 feet away also with a sheet of paper over it. I also have the lights in the lab turned off to do this. I took an exposure of 0.5s - anymore than this and saturation occurs. I get this resulting flat frame: 
+flat frames where pretty good actually (Here is one with a mean luminance ~1000): 
+![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/72abdfb9-b631-494c-a5bf-414405d5347c)
 
-![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/b489993d-92ff-468a-88b5-58989faa3906)
 
-running the code I got a value of 0.106 e-/ADU. I also used just a single bias frame. I did not make a master one. The value I got is wayyyyyyy too low and most likely very incorrect. 
 
 
 # Setup
