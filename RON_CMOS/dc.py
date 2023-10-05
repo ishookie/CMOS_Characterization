@@ -10,74 +10,75 @@ sys.path.append("..")
 import loadImage
 
 class DC: 
-    def __init__(self, relativePath):
+    def __init__(self, relativePath, biasPath = '-5.0C_highGain'):
         # Create dir path and load iamges
         self.absPath = os.path.dirname(__file__)
-        self.fullPath = os.path.join(self.absPath, relativePath)
+        self.fullPath = os.path.join(self.absPath, '..', 'frames', relativePath)
         self.fitsLoader = loadImage.fitsLoader(self.fullPath)
         # Load images with exposure time as key -> keyImages
         self.fitsLoader.sortImages('EXPTIME')
         self.diffDict = {} 
         self.darkCurrents = {}
         self.diff = [] 
+        # Load bias to create master bias 
+        self.fullPathBias = os.path.join(self.absPath, '..', 'frames', biasPath)
+        self.fitsLoaderBias = loadImage.fitsLoader(self.fullPathBias)
+        self.fitsLoaderBias.loadImages()
 
 
-    def diffFrame(self):
+    def fullFrameDC(self):
         """
-        Takes an even number of dark frames "D" and subtracts them following this formula:
-        D = D0 - D1 + D2 - D3 + ... + Dn - Dn-1
-        Difference frames are stored in a dictionary with exposure time keys called
-        diffDict
-        Also calcualtes the overall dark currents with and stores them in a dictionary
-        with key values being exposure time
+        Test to calculate the dark current vs time for the entire image. 
         """
-        #Loop through image data for each exposure time key 
-        for expTime, dataList in self.fitsLoader.keyImages.items():
-            diff = 0 
-  
-            #Calcualate difference
-            for n in range(0, len(dataList) - 1, 2):
-                diff += dataList[n].astype(np.float64) - dataList[n+1].astype(np.float64)
-            
-            if expTime not in self.diffDict:
-                self.diffDict[expTime] = []
-            
-            self.diffDict[expTime].append(diff) 
-            # FIX THIS PLEASE
-            # Calc dark current here - using 1.2 as stock gain value
-            self.darkCurrents[expTime] = (1.2 * np.var(diff)) / expTime 
+        #Create master bais 
+        masterBias = np.stack(self.fitsLoaderBias.images, axis=0)
+        masterBias = np.mean(masterBias)
 
+        for expTime, dataList in self.fitsLoader.keyImages.items(): 
+            stackedFrame = np.stack(dataList, axis=0)
+            dc = np.mean(stackedFrame)
+            # Subtract Bias from dark frames
+            dc = dc - masterBias
+            
+            if expTime not in self.darkCurrents:
+                self.darkCurrents[expTime] = []
+            self.darkCurrents[expTime] = dc 
+   
 
     def graphDCvsTIME(self):
-        
-        
+        """
+        Plot Dark Current Count vs Time
+        Also display Dark Current (slope of linear fit)
+        """
+        # Load Times and Values
         times = list(self.darkCurrents.keys())
         values = list(self.darkCurrents.values())
-
-        print(f"Times: {times}")
-        print(f"Values: {values}")
-        
-
         values = np.array(values)
         times = np.array(times)
-
-       # Fit a logarithmic function
-        params = np.polyfit(np.log(times), values, 1)
+        # Fit a linear function
+        params = np.polyfit(times, values, 1)
         a, b = params
-
         # Scatter plot of the data points
         plt.scatter(times, values, label='Dark Current vs Time', color='blue')
-
+        # Annotate each point with its dark current value
+        for i, txt in enumerate(values):
+            plt.annotate(f'{txt:.2f}', (times[i], values[i]), textcoords="offset points", xytext=(0, 10), ha='center')
+        # Create the linear fit equation text
+        equation_text = f'Dark Current: {a:.2f} e-/p/s'
+        # Print DC value
+        print(f"Dark Current: {a:.2f} e-/p/s")
+        # Also put DC value on graph
+        plt.text(0.1, 0.9, equation_text, transform=plt.gca().transAxes, fontsize=12, bbox=dict(facecolor='white', edgecolor='black'))
+        # Title the graph
+        plt.title('Dark Current vs Time')
         # Generate the fitted curve
-        fittedCurve = a * np.log(times) + b
-
+        fittedCurve = a * times + b
         # Plot the fitted curve
-        plt.plot(times, fittedCurve, 'r--', label='Logarithmic Fit')
-
+        plt.plot(times, fittedCurve, 'r--', label='Linear Fit')
+        #Label and show graph 
         plt.xlabel('Time (s)')
         plt.ylabel('Dark Current (e-)')
         plt.grid(True)
-        plt.legend()
         plt.show()
 
 
