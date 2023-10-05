@@ -32,8 +32,22 @@ This is the noise introduced through the readout circitry, mainly the preamplifi
 
 ### Analysis 
 Currently I have not been able to get a reasonable number for the gain so to convert the RON noise figures from ADU to e- I will be using the stock gain value taken from diffraction's website which is **1.2 e-/ADU** on the high gain mode. 
+Okay so for N = 545 I tested a few different ways: 
 
-For N = 100 I got the following results: 
+1. $\text{RON} = \frac{\sigma}{\sqrt{2}}$
+
+This gives **RON = 1.059 ADU -> 1.27 e-** The histogram is shown below:
+
+![RON-stdOVERsqrt(2)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/13eb2e82-4d01-44c8-af9d-a07c169d5a51)
+
+2. $\sqrt{\sigma}$
+
+This gives **RON = 1.497 ADU -> 1.796 e-** the histogram is shown below: 
+
+![RON-sqrt(std)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/761a9b22-af47-44f6-ba06-6ba4cf87b881)
+
+
+ 
 
 **-5.0C (High Gain Mode)**
 - Min Value: 0.908 ADU
