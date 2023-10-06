@@ -92,7 +92,7 @@ There are three main sources of dark current:
 1. Take N dark frames at multiple different exposure times, same temperature
 2. Average N frames and subtract a master bias from them
 3. Graph Dark Current Count vs Time. Slope is the dark current
-4. 
+
 ### Analysis 
 10 frames were taken at each exposure time: 1s, 10s, 60s, 120s and 240s and the following graph was obtained:
 
@@ -111,7 +111,7 @@ Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain
 1. Take N flats at the same exposure time but varying luminance
 2. Take N darks at the same exposure time
 3. Create Master Dark by taking the mean between N frames
-4. For each flat subtract the master dark, then calculate the mean and variance of a qxq area of the image where it is "flattest" (avoid edges due to weird edge effects)
+4. For each flat subtract the master dark, then calculate the mean and variance of a nxn area of the image where it is "flattest" (avoid edges due to weird edge effects)
 5. Plot Variance vs Mean and calculate the slope, this is the gain. 
 
 ### Analysis 
