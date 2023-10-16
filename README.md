@@ -32,8 +32,22 @@ This is the noise introduced through the readout circitry, mainly the preamplifi
 
 ### Analysis 
 Currently I have not been able to get a reasonable number for the gain so to convert the RON noise figures from ADU to e- I will be using the stock gain value taken from diffraction's website which is **1.2 e-/ADU** on the high gain mode. 
+Okay so for N = 545 I tested a few different ways: 
 
-For N = 100 I got the following results: 
+1. $\text{RON} = \frac{\sigma}{\sqrt{2}}$
+
+This gives **RON = 1.059 ADU -> 1.27 e-** The histogram is shown below:
+
+![RON-stdOVERsqrt(2)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/13eb2e82-4d01-44c8-af9d-a07c169d5a51)
+
+2. $\sqrt{\sigma}$
+
+This gives **RON = 1.497 ADU -> 1.796 e-** the histogram is shown below: 
+
+![RON-sqrt(std)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/761a9b22-af47-44f6-ba06-6ba4cf87b881)
+
+
+ 
 
 **-5.0C (High Gain Mode)**
 - Min Value: 0.908 ADU
@@ -78,15 +92,15 @@ There are three main sources of dark current:
 1. Take N dark frames at multiple different exposure times, same temperature
 2. Average N frames and subtract a master bias from them
 3. Graph Dark Current Count vs Time. Slope is the dark current
-4. 
+
 ### Analysis 
 10 frames were taken at each exposure time: 1s, 10s, 60s, 120s and 240s and the following graph was obtained:
 
-![DCvsTimeAdjusted](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/cf8eb523-6e39-4065-8e16-84db7437395f)
+![DCvsTime](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/274738d7-4186-4fc4-9b9a-0699957306ba)
 
-The resulting DC value is 0.17 e-/p/s
+The resulting DC value is **0.10 e-/p/s**
 
-The sensor used clearly has areas more succeptable to dark current than others. A exagerated image showing this spots is shown below: 
+The dark current is calcualted only for the center 1000x1000 pixel region of the image. The sensor used clearly has areas more succeptable to dark current than others. A exagerated image showing this spots is shown below: 
 
 ![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5886d752-cd93-4dfb-9813-12ff304b60e6)
 
@@ -97,7 +111,7 @@ Gain is the conversion between from arbitrary ADU units to electrons. i.e a gain
 1. Take N flats at the same exposure time but varying luminance
 2. Take N darks at the same exposure time
 3. Create Master Dark by taking the mean between N frames
-4. For each flat subtract the master dark, then calculate the mean and variance of a qxq area of the image where it is "flattest" (avoid edges due to weird edge effects)
+4. For each flat subtract the master dark, then calculate the mean and variance of a nxn area of the image where it is "flattest" (avoid edges due to weird edge effects)
 5. Plot Variance vs Mean and calculate the slope, this is the gain. 
 
 ### Analysis 
@@ -105,10 +119,11 @@ I took a series of flat images all at -5.0C. The exposure time was at 0.2 second
 
 The resulting photon transfer curve (PTC) for the central 300x300 region is shown below: 
 
-![Photon Transfer Curve  Center 300x300](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/5550794d-743d-42a6-bab5-48c6b74a0924)
+![PTC(Good)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/cdfe7b4c-a74f-434b-a4b1-3ccf8ad0efbb)
 
+From the inverse slope we can see that the gain is **1.2 e-/ADU**
 
-From the slope we can see that the gain is **0.83 e-/ADU**
+The RON can also be extracted from the PTC as the $\sqrt{\text{y-intercept}}$ which is **1.6**
 
 I also created a heat map to look at the spacial variance of gain values across the image. 
 This works by finding the gain between all n images for a 48x48 pixel block. It then repeates this across the entire image and plots it as a heat map. 
