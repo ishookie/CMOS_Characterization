@@ -33,7 +33,9 @@ class RON:
         self.meanBias = np.mean(self.stackedArray, axis=0)
         self.subArray = self.stackedArray.astype(np.float32) - self.meanBias.astype(np.float32) 
         # Calc std of subtracted frames
-        self.stdArray = np.std(self.subArray, axis = 0)
+        
+        self.stdArray = np.mean(self.subArray, axis = 0)
+        self.stdArray = np.sqrt(self.subArray, axis = 0)
         # clip data
         self.clipped, _, _ = sigmaclip(self.stdArray, low=self.threshold, high=self.threshold)
         self.plotStatistics()

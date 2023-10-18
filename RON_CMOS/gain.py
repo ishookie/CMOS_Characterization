@@ -76,7 +76,7 @@ class GAIN:
         x_line = np.linspace(min(self.meanVals), max(self.meanVals), 1000)
         y_line = bestFit(x_line)
         # Plot data points and line of best fit
-        plt.scatter(self.meanVals, self.varVals, label='Data Points')
+        plt.scatter(self.varVals, self.meanVals, label='Data Points')
         plt.scatter(x_line, y_line, color='red', label=f'Fit: y = {slope:.2f}x + {intercept:.2f}', s=0.1)
         plt.xlabel("Mean")
         plt.ylabel("Variance")
