@@ -12,6 +12,8 @@ __pycache__/
 *.fits
 *.fit
 *.csv
+dfcore
+
 # Distribution / packaging
 .Python
 build/

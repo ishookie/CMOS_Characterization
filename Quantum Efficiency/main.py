@@ -15,7 +15,10 @@ def runPhotodiode(start=400, stepSize=100):
     
     # List for wavelengths 
     wavelengths = []
-    data = [] 
+    data = {} 
+    
+    # Directory where data will be saved
+    dirPath = '/photodiode'
     
     # Go to starting wl and wait extra long
     monochromator.goWave(start)
@@ -25,22 +28,30 @@ def runPhotodiode(start=400, stepSize=100):
         wl = monochromator.goWave(n)
         wavelengths.append(wl) 
         photodiode.setWavelength(wl) 
+        
+        readings = [] 
+        
+        # Get 5 minutes of readings in 1s intervals
+        for i in range(300):
+            readings.append(photodiode.readData()) 
+            time.sleep(1) 
+            
+        data[wl] = readings 
         data.append(photodiode.readData())
-        
-        
-        
-        dirPath = '/photodiode'
         
         # Define the CSV file name
         file_name = 'example.csv'  # Replace with your desired file name
-
-        # Combine the directory and file name to get the full file path
         filePath = f'{dirPath}/{file_name}'
         
+        # Write csv file 
         with open(filePath, 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Timestamp', 'Power'])
-            writer.writerow([timestamp, power_reading])
+            csv_writer = csv.writer(file)
+            # Write the header row with column names
+            csv_writer.writerow(['Wavelength', 'Readings'])
+            # Write data
+            for wavelength, readings in data.items():
+                for reading in readings:
+                    csv_writer.writerow([wavelength, reading])
         
     print(f"Wavelengths: {wavelengths}")
     print(f"Data: {data}")
@@ -59,9 +70,11 @@ def runCamera(start=400, stepSize=100):
         time.sleep(2)
         cam.takeExposures(duration=0.0001,wavelength=n,numExposes=5)
 
-def takeDarks():
+def takeDarks(start = 400, stepSize=100):
     cam = dfcore()
     
+    for n in range(start, 700+stepSize, stepSize):
+        cam.takeDarks(0.0001 ,numDarks=5)
     cam.takeDarks(1,1) 
 
 if __name__ == '__main__':
