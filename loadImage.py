@@ -70,6 +70,31 @@ class fitsLoader:
 
         self.keyImages = OrderedDict(sorted(self.keyImages.items()))
 
+    def loadByFilename(self): 
+        """
+        Load fits images by filename 
+        Used for loading images taken in QE testing
+        """
+        for filename in os.listdir(self.folderPath):
+            # incase there is a non-fit file in the folder
+            if filename.endswith(".fits"):
+                # Get wavelength from filename
+                wavelength = filename.split('nm')[0]
+                filePath = os.path.join(self.folderPath, filename)
+                try:
+                    with fits.open(filePath) as hdul:
+                        data = hdul[0].data
+                        self.images.append(data)
+                        
+                        if wavelength not in self.keyImages:
+                            self.keyImages[wavelength] = []
+
+                        self.keyImages[wavelength].append(data)
+                except Exception as e:
+                    print(f"Error reading {filePath}: {str(e)}")
+            # Sort dic by wavelength lowest -> highest
+            self.keyImages = {k: v for k, v in sorted(self.keyImages.items())}
+        
 
 
     def printDict(self):
