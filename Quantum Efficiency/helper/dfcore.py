@@ -4,10 +4,12 @@ import subprocess
 class dfcore: 
     
     def __init__(self):
-        # self.exposTime = 0.1
-        self.path = "./lib/dfcore"
+        self.path = "./helper/dfcore"
         # Cooling off by default
         self.coolingOff()
+        # Directories for saving images
+        self.saveDir = 'data/exposures'
+        self.saveDirDarks = '/data/darks'
     
     
     def coolingOff(self):
@@ -32,10 +34,10 @@ class dfcore:
         if process.returncode != 0:
             print(f"Error Running dfcore code: {process.returncode}")
         if stderr: 
-            print(f"Error: stderr.decode()")
+            print(f"Error: {stderr.decode()}")
         
     
-    def takeExposures(self, duration = "0", wavelength=0, numExposes=0):
+    def takeExposures(self, duration = 0, wavelength=0, numExposes=0):
         """
         Take exposure
         
@@ -53,11 +55,11 @@ class dfcore:
             print("Error: please provide exposure duration")
         
         # Compose initial arguments
-        arguments = ["expose", "--duration", str(duration), "--disable_overscan", "1", "--camera", "0", "--savedir", "exposures"]
+        arguments = ["expose", "--duration", str(duration), "--disable_overscan", "1", "--camera", "0", "--savedir", str(self.saveDir)]
         
         # Take exposures and name files accordingly
         for n in range(numExposes):
-            command = arguments + ["--filename", f"{wavelength}nm_{n}.fits" ]
+            command = arguments + ["--filename", f"{wavelength}nm_{duration}s_{n}.fits" ]
             self.sendCommand(command)
             command = [] 
             
@@ -66,7 +68,7 @@ class dfcore:
         if numDarks == 0:
             print("Error: please provide number of darks to be taken")
         
-        arguments = ["expose", "--duration", str(duration), "--disable_overscan", "1", "--camera", "0", "--dark", "--savedir", "darks"]
+        arguments = ["expose", "--duration", str(duration), "--disable_overscan", "1", "--camera", "0", "--dark", "--savedir", str(self.saveDirDarks)]
         
         for n in range(numDarks):
             command = arguments + ["--filename", f"{duration}s_{n}.fits" ]

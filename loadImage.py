@@ -72,8 +72,12 @@ class fitsLoader:
 
     def loadByFilename(self): 
         """
-        Load fits images by filename 
-        Used for loading images taken in QE testing
+        Load fits images by filename.
+        Used for loading images taken in QE testing. 
+        
+        Returns:
+            self.keyImages (dict): Sorted dictionary of numpy arrays
+            containing pixel information. 
         """
         for filename in os.listdir(self.folderPath):
             # incase there is a non-fit file in the folder
