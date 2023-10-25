@@ -6,9 +6,9 @@ import numpy as np
 
 class Photodiode: 
     
-    def __init__(self):
+    def __init__(self, port="/dev/ttyUSB1"):
         self.ser = serial.Serial()
-        self.ser.port = "/dev/ttyUSB1"
+        self.ser.port = port
         self.ser.baudrate = 9600
         self.ser.bytesize = serial.EIGHTBITS # number of bits per bytes
         self.ser.parity = serial.PARITY_NONE # set parity check: no parity

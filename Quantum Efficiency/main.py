@@ -1,6 +1,6 @@
-from lib.Monochromator import Monochromator
-from lib.Photodiode import Photodiode
-from lib.dfcore import dfcore
+from helper.Monochromator import Monochromator
+from helper.Photodiode import Photodiode
+from helper.dfcore import dfcore
 
 import csv
 import numpy as np
@@ -18,7 +18,7 @@ def runPhotodiode(start=400, stepSize=100):
     data = {} 
     
     # Directory where data will be saved
-    dirPath = '/photodiode'
+    dirPath = 'data/photodiode'
     
     # Go to starting wl and wait extra long
     monochromator.goWave(start)
@@ -36,8 +36,10 @@ def runPhotodiode(start=400, stepSize=100):
             readings.append(photodiode.readData()) 
             time.sleep(1) 
             
-        data[wl] = readings 
-        data.append(photodiode.readData())
+        if wl not in data:
+            data[wl] = []
+        
+        data[wl] = readings
         
         # Define the CSV file name
         file_name = 'example.csv'  # Replace with your desired file name
@@ -57,7 +59,7 @@ def runPhotodiode(start=400, stepSize=100):
     print(f"Data: {data}")
     
 
-def runCamera(start=400, stepSize=100):
+def runCamera(duration, start=400, stepSize=100):
     monochromator = Monochromator()
     cam = dfcore()
     
@@ -65,10 +67,11 @@ def runCamera(start=400, stepSize=100):
     monochromator.goWave(start)
     time.sleep(5)
     
-    for n in range(start, 700+stepSize, stepSize):
-        wl = monochromator.goWave(n)
-        time.sleep(2)
-        cam.takeExposures(duration=0.0001,wavelength=n,numExposes=5)
+    for t in duration: 
+        for n in range(start, 700+stepSize, stepSize):
+            wl = monochromator.goWave(n)
+            time.sleep(2)
+            cam.takeExposures(t,wavelength=n,numExposes=5)
 
 def takeDarks(start = 400, stepSize=100):
     cam = dfcore()
@@ -78,17 +81,13 @@ def takeDarks(start = 400, stepSize=100):
     cam.takeDarks(1,1) 
 
 if __name__ == '__main__':
-    # m = Monochromator()
-    # m.goWave(550)
-    # runCamera() 
-    # runPhotodiode()
-    # m = Monochromator()
-    # m.goWave(500) 
-    # p = Photodiode()
-    # p.setWavelength(500)
-    # print(p.readData())
+    m = Monochromator()
+    m.openShutter()
+    m.goWave(550) 
     
-    takeDarks() 
+    # duration = [1,3,5]
+    # runCamera(duration) 
+    # runPhotodiode() 
     
         
         

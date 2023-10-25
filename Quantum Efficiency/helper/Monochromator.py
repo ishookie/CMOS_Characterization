@@ -6,9 +6,9 @@ import numpy as np
 
 class Monochromator:
     
-    def __init__(self):
+    def __init__(self, port='/dev/ttyUSB0'):
         self.ser = serial.Serial()
-        self.ser.port = "/dev/ttyUSB0"
+        self.ser.port = port
         self.ser.baudrate = 9600
         self.ser.bytesize = serial.EIGHTBITS #number of bits per bytes
         self.ser.parity = serial.PARITY_NONE #set parity check: no parity
@@ -31,22 +31,6 @@ class Monochromator:
         Open serial connection 
         """
         self.ser.open() 
-    
-    def units(self):
-        msg = f"SHUTTER C{self.terminating}".encode(self.encoding)
-        return self.ser.write(msg)   
-    
-    def customCommand(self, msg):
-        """
-        Send a sepcified command through the serial port
-
-        Args:
-            msg (str): The command to be sent
-        """
-        msg += self.terminating
-        msg = msg.upper()
-        msg = msg.encode(self.encoding)
-        return self.ser.write(msg)
 
     def write(self, msg):
         """
@@ -104,10 +88,8 @@ class Monochromator:
     
     
     def sweepVisible(self, stepSize):
-        """_summary_
-
-        Args:
-            stepSize (_type_): _description_
+        """
+        USELESS DELETE PROLLY
         """
         # start at 400nm wavelength 
         start = 400 
