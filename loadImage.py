@@ -70,9 +70,12 @@ class fitsLoader:
 
         self.keyImages = OrderedDict(sorted(self.keyImages.items()))
 
-    def loadByFilename(self): 
+    def loadByFilename(self, delimiter: str): 
         """
-        Load fits images by filename.
+        Load fits images by filename. Delimiter is where the string is split. i.e:
+        filename: 7s_0.fits
+        delimiter: s_
+        results: 7
         Used for loading images taken in QE testing. 
         
         Returns:
@@ -83,7 +86,7 @@ class fitsLoader:
             # incase there is a non-fit file in the folder
             if filename.endswith(".fits"):
                 # Get wavelength from filename
-                wavelength = filename.split('nm')[0]
+                wavelength = filename.split(delimiter)[0]
                 filePath = os.path.join(self.folderPath, filename)
                 try:
                     with fits.open(filePath) as hdul:

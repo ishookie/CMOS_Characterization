@@ -22,13 +22,18 @@ class Photodiode:
         self.wavelengths = np.empty((0,))
         # Open the serial connection
         self.open()
+        time.sleep(0.5)
         # Disable Echo (messes up reading data)
         self.disableEcho()
+        time.sleep(0.5)
         # Turn attenuation on
         self.attenuationOn()
+        time.sleep(0.5)
         # Set Range to R4
         self.setRange()
+        time.sleep(0.5)
         self.setUnits() 
+        time.sleep(0.5)
         
     def open(self):
         """
@@ -62,7 +67,7 @@ class Photodiode:
         """
         Set the measurment range.
         """
-        self.write("R4")
+        self.write("R1")
         return 
     
         
