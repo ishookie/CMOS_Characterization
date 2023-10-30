@@ -9,7 +9,7 @@ class dfcore:
         self.coolingOff()
         # Directories for saving images
         self.saveDir = 'data/exposures'
-        self.saveDirDarks = '/data/darks'
+        self.saveDirDarks = 'data/darks'
     
     
     def coolingOff(self):
