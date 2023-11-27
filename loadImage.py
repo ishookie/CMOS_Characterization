@@ -11,12 +11,13 @@ class fitsLoader:
         self.images = []
         self.keyImages = {}
 
-    """
-    Takes fits images from a folder whos path is specified in
-    the constructor and adds the image data (primary header)
-    to a list called "images"
-    """
+
     def loadImages(self):
+        """
+        Takes fits images from a folder whos path is specified in
+        the constructor and adds the image data (primary header)
+        to a list called "images"
+        """
         for filename in os.listdir(self.folderPath):
             # incase there is a non-fit file in the folder
             if filename.endswith(".fit"):
@@ -27,10 +28,18 @@ class fitsLoader:
                         self.images.append(data)
                 except Exception as e:
                     print(f"Error reading {filePath}: {str(e)}")
+        return self.images
     
     def getHeaderInfo(self, str):
         """
-        Gets exposure time from a fits header of the first file in a given directory 
+        Gets data from a given header string. For example EXPTIME to get 
+        exposure time. 
+
+        Args:
+            str (str): Fits header to load data from. 
+
+        Returns:
+            _type_: data associated with header. 
         """
         all_files = os.listdir(self.folderPath)
         fits_files = [file for file in all_files if file.endswith('.fit')]
@@ -48,9 +57,12 @@ class fitsLoader:
 
     def sortImages(self, head):
         """
-        Similar to loadImages but stores image data in a dictionary 
-        where the key is the given header string argument
-        used in dc with exposure time as the key
+        Similar to loadImages but stores image data in a ordered dictionary 
+        where the key is the given header string argument.
+        Used in dc with exposure time as the key.
+
+        Args:
+            head (str): Header value to sort images by.
         """
         for filename in os.listdir(self.folderPath):
             if filename.endswith(".fit"):
@@ -69,6 +81,7 @@ class fitsLoader:
                     print(f"Error reading {filePath}: {str(e)}")
 
         self.keyImages = OrderedDict(sorted(self.keyImages.items()))
+        return self.keyImages
 
     def loadByFilename(self, delimiter: str): 
         """
@@ -77,6 +90,9 @@ class fitsLoader:
         delimiter: s_
         results: 7
         Used for loading images taken in QE testing. 
+        
+        Args: 
+            delimiter (str): delimiter to parse filename. 
         
         Returns:
             self.keyImages (dict): Sorted dictionary of numpy arrays
@@ -99,8 +115,10 @@ class fitsLoader:
                         self.keyImages[wavelength].append(data)
                 except Exception as e:
                     print(f"Error reading {filePath}: {str(e)}")
-            # Sort dic by wavelength lowest -> highest
-            self.keyImages = {k: v for k, v in sorted(self.keyImages.items())}
+        
+        # Sort dic by wavelength lowest -> highest
+        self.keyImages = {k: v for k, v in sorted(self.keyImages.items())}
+        return self.keyImages
         
 
 

@@ -24,7 +24,7 @@ class dfcore:
     def sendCommand(self, arguments):
         """
         Run dfcore with specified arguments
-        *arguments are in the form of a list*
+        *arguments are in the form of a list, example:
         ["expose", "--duration", "0.1", "--disable_overscan", "1"]
         """
         command = [self.path] + arguments
@@ -39,7 +39,7 @@ class dfcore:
     
     def takeExposures(self, duration = 0, wavelength=0, numExposes=0):
         """
-        Take exposure
+        Take an exposure. 
         
         Args: 
             duration (float): Exposure duration 

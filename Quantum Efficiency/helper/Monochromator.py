@@ -10,19 +10,19 @@ class Monochromator:
         self.ser = serial.Serial()
         self.ser.port = port
         self.ser.baudrate = 9600
-        self.ser.bytesize = serial.EIGHTBITS #number of bits per bytes
-        self.ser.parity = serial.PARITY_NONE #set parity check: no parity
-        self.ser.stopbits = serial.STOPBITS_ONE #number of stop bits
-        self.ser.timeout = 1            #non-block read
-        self.ser.writeTimeout = 2     #timeout for write
+        self.ser.bytesize = serial.EIGHTBITS # Number of bits per bytes
+        self.ser.parity = serial.PARITY_NONE # Set parity check: no parity
+        self.ser.stopbits = serial.STOPBITS_ONE # Number of stop bits
+        self.ser.timeout = 1            # Non-block read
+        self.ser.writeTimeout = 2     # Timeout for write
         
-        self.terminating = '\r\n'
-        self.encoding = 'utf-8'
-        
-        self.wavelengths = np.empty((0,))
-        self.open() 
-        
+        self.terminating = '\r\n' # Terminating characters
+        self.encoding = 'utf-8' # Encoding format
     
+        self.open() # Open serial conenction
+        self.openShutter()
+        
+        
     def __del__(self):
         self.ser.close() 
         
@@ -34,7 +34,7 @@ class Monochromator:
 
     def write(self, msg):
         """
-        Send a sepcified command through the serial port
+        Send a specified command through the serial port.
 
         Args:
             msg (str): Command to be sent
@@ -43,21 +43,42 @@ class Monochromator:
             int: Number of bytes written. 
         """
         msg = f"{msg}{self.terminating}".encode(self.encoding)
-        return self.ser.write(msg)  
+        res = self.ser.write(msg) 
+        self.ser.readline()
+        return res
     
+    def writeAndRead(self, msg, display=False):
+        """
+        Send a command and get the response. 
+
+        Args:
+            msg (str): Command to be sent
+            display (bool, optional): Print response in console. Defaults to False.
+
+        Returns:
+            str: response message. 
+        """
+        msg = f"{msg}{self.terminating}".encode(self.encoding)
+        res = self.ser.write(msg) 
+        response = self.ser.readline()
+        return response
     
     def openShutter(self):
         """
         Opens the shutter on the device. 
         """
-        return self.write("SHUTTER O") 
+        res = self.write("SHUTTER O")
+        self.ser.readline()
+        return res
     
     
     def closeShutter(self):
         """
         Closes the shutter on the device. 
         """
-        return self.write("SHUTTER C")
+        res = self.write("SHUTTER C")
+        self.ser.readline() 
+        return res
     
     
     def goWave(self, waveLength):
@@ -86,25 +107,9 @@ class Monochromator:
         response = self.ser.readline().decode(self.encoding)
         print(response)
     
-    
-    def sweepVisible(self, stepSize):
-        """
-        USELESS DELETE PROLLY
-        """
-        # start at 400nm wavelength 
-        start = 400 
-        self.goWave(start)
-        #Longer sleep at the start
-        time.sleep(5) 
-        
-        for i in range(start, 700 + stepSize, stepSize):
-            wl = self.goWave(i)
-            self.wavelengths = np.append(self.wavelengths, wl)
-        
-        print(self.wavelengths)
+
 
 
 if __name__ == '__main__':
     test = Monochromator() 
-    test.open() 
-    test.goWave(450)
+    test.goWave(550)

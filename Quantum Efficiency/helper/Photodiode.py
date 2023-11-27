@@ -19,7 +19,6 @@ class Photodiode:
         self.terminating = '\n' # Line terminators
         self.encoding = 'utf-8' # Encoding for communications
         
-        self.wavelengths = np.empty((0,))
         # Open the serial connection
         self.open()
         time.sleep(0.5)
@@ -34,6 +33,9 @@ class Photodiode:
         time.sleep(0.5)
         self.setUnits() 
         time.sleep(0.5)
+        
+    def __del__(self):
+        self.ser.close() 
         
     def open(self):
         """
@@ -50,6 +52,7 @@ class Photodiode:
         self.write("U1")
         return 
         
+        
     def disableEcho(self):
         """
         Checks and disables Echo mode.
@@ -62,6 +65,7 @@ class Photodiode:
         elif response:
             self.write("E0")
         return 
+    
     
     def setRange(self):
         """
@@ -84,7 +88,7 @@ class Photodiode:
         Send a specified command through the serial port.
 
         Args:
-            msg (str): Command to be sent
+            msg (str): Command to be sent.
 
         Returns:
             int: Number of bytes written. 
@@ -92,20 +96,42 @@ class Photodiode:
         msg = f"{msg}{self.terminating}".encode(self.encoding)
         return self.ser.write(msg)  
     
-    def getRange(self):
+    def writeAndRead(self, msg, display = False):
+        """
+        Write a message and return the response from the powermeter. 
+
+        Args:
+            msg (_type_): Command to be sent. 
+            display (bool, optional): Display response message in console. Defaults to False.
+
+        Returns:
+            response (str): Response message from power meter. 
+        """
+        self.write(msg) 
+        response = self.ser.readline().decode(self.encoding).strip() 
+        if display: 
+            print(response)
+        return response 
+        
+    
+    def getRange(self, display=False):
         """
         Get the current range of the powermeter and print it. 
+        
+        Args:
+            display (bool, optional): Print response message to console. Defaults to False
         
         Returns: 
             str: current range of power meter
         """
         self.write("R?")
         response = self.ser.readline().decode(self.encoding).strip() 
-        print(response)
+        if display: 
+            print(response)
         return response 
     
     
-    def readData(self):     
+    def readData(self, display=False):     
         """
         Read data from powermeter.
         
@@ -147,3 +173,5 @@ if __name__ == '__main__':
     test.setWavelength(500)
     time.sleep(3)
     test.curWavelength()
+    
+

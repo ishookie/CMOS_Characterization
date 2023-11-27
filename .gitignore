@@ -13,6 +13,7 @@ __pycache__/
 *.fit
 *.csv
 dfcore
+*.png
 
 # Distribution / packaging
 .Python
