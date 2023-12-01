@@ -27,5 +27,13 @@ def testDC():
     darkCurrent.graphDCvsTIME()
 
 # testGain('flat_frames/high_gain', 'dark_frames')
-testPixelWiseGain('flat_frames/high_gain', 'dark_frames/high_gain', 'test')
-# testRON('bias_frames/high_gain', "test plot") 
+# testPixelWiseGain('flat_frames/high_gain', 'dark_frames/high_gain', 'test')
+ronObject = ron.RON()
+# ronObject.takeData(-5, number=100)
+
+# ronObject.takeData(-5) 
+ronObject.createMasterBias(-5) 
+# testRON('bias_frames/high_gain', "Clipped_Plot") 
+
+# test = dc.DC() 
+# test.takeDarks(-2, 1)

@@ -21,10 +21,6 @@ class GAIN:
         self.fitsLoaderDark = loadImage.fitsLoader(self.fullPathDark)
         self.fitsLoaderDark.loadImages() 
         # Lists to store data
-        self.varVals = []
-        self.meanVals = [] 
-        self.gainValues = [] 
-        
         # Output path for figures
         self.outputDir = os.path.join(os.path.dirname(__file__), '..', 'plots', 'gain_plots')
         self.plotPath = os.path.join(self.outputDir, f'{figureName}_PTC.png')
@@ -56,6 +52,9 @@ class GAIN:
         #Create Master Dark 
         masterDark = np.stack(self.fitsLoaderDark.images, axis=0)
         masterDark = np.mean(masterDark, axis=0)
+        
+        meanVals = []
+        varVals = []
        
         for frame in self.fitsLoaderFlat.images:
             subFrame = frame - masterDark     
@@ -65,24 +64,24 @@ class GAIN:
             # Calc mean and variance
             mean = np.mean(ROI)
             variance = np.var(ROI)
-            self.meanVals.append(mean) 
-            self.varVals.append(variance) 
+            meanVals.append(mean) 
+            varVals.append(variance) 
 
-        self.plotPTC() 
+        self.plotPTC(meanVals, varVals) 
         
     
 
-    def plotPTC(self):
+    def plotPTC(self, meanVals, varVals):
         """
         Plots the photon transfer curve 
         """
-        slope, intercept = np.polyfit(self.meanVals, self.varVals, 1)
+        slope, intercept = np.polyfit(meanVals, varVals, 1)
         # Super scuffed linear fit line (just a bunch of tightly grouped points)
         bestFit = np.poly1d([slope, intercept])
-        x_line = np.linspace(min(self.meanVals), max(self.meanVals), 1000)
+        x_line = np.linspace(min(meanVals), max(meanVals), 1000)
         y_line = bestFit(x_line)
         # Plot data points and line of best fit
-        plt.scatter(self.meanVals, self.varVals)
+        plt.scatter(meanVals, varVals)
         
         # Gain is 1/slope and RON is sqrt(y-intercept)
         gain = 1/slope
@@ -108,6 +107,7 @@ class GAIN:
         masterDark = np.mean(masterDark, axis=0)
 
         ### ADD THE LOOP HERE 48 box size
+        gainVals = []
 
         for x in range(0, 3216, 48):
             for y in range(0, 2208, 48):
@@ -127,12 +127,13 @@ class GAIN:
 
                 gain, intercept = np.polyfit(meanNums, varNums, 1)
 
-                self.gainValues.append(gain) 
+                gainValues.append(gain) 
 
 
         original = np.zeros((3216, 2208))
 
-        gainValues = np.array(self.gainValues).reshape(3216 // 48, 2208 // 48)
+        # Reshape frame with 48x48 binning
+        gainValues = np.array(gainValues).reshape(3216 // 48, 2208 // 48)
 
         for i in range(67):
             for j in range(46):

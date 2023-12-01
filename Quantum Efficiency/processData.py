@@ -148,6 +148,7 @@ def calcSensorTerm(scienceImages: dict, eGain = 5.419037, expTime=7):
         sum = sum / expTime # divide by exposure time
         # Round wavelength to integer
         sensorTerm[int(wavelength)] = sum
+    print(f"Sensor Term: {sensorTerm}")
     return sensorTerm
 
 def loadAndCleanCsv(filepath):

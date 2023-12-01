@@ -2,6 +2,12 @@ from helper.Monochromator import Monochromator
 from helper.Photodiode import Photodiode
 from helper.dfcore import dfcore
 
+import sys 
+sys.path.append("../cam")
+from camera import DLAPICamera
+from gateway import DLAPIGateway
+
+
 import csv
 import numpy as np
 import time 
@@ -114,6 +120,7 @@ def photodiodeDark(start=400, stepSize = 100, file_name = 'photodiode_dark'):
                     csv_writer.writerow([wavelength, reading])
         
 
+## ADD CAMERA MODE HERE***
 def runCamera(duration, start=400, stepSize=100):
     """
     Take camera exposures.
@@ -124,19 +131,22 @@ def runCamera(duration, start=400, stepSize=100):
         stepSize (int, optional): Wavelength stepsize. Defaults to 100.
     """
     monochromator = Monochromator()
-    cam = dfcore()
     
+    gateway = DLAPIGateway() 
+    cam = DLAPICamera(gateway, model='stc', dirname='/home/deb/Documents/CMOS_Characterization/Quantum Efficiency/data/exposures')
+    cam.connect() 
+
     # Go to starting wl and wait extra long
     monochromator.goWave(start)
     time.sleep(5)
-    
     for t in duration: 
         for n in range(start, 700+stepSize, stepSize):
             wl = monochromator.goWave(n)
             time.sleep(2)
-            cam.takeExposures(t,wavelength=n,numExposes=5)
+            cam.expose(exptime=t, imtype='light', readout_mode='Low Gain', filename=f"{t}s_light_{n}nm_{readout_mode}.fits") 
+            #cam.takeExposures(t,wavelength=n,numExposes=5)
 
-def takeDarks(duration, numExposes=5):
+def takeDarks(duration, numExposes=5, readout_mode='Low Gain'):
     """
     Take camera darks with specified duration and number of frames at each duration.
 
@@ -144,22 +154,41 @@ def takeDarks(duration, numExposes=5):
         duration (list): list of exposure durations to take. 
         numExposes (int, optional): Number of exposures to take at each duration. 
     """
-    cam = dfcore()
+    gateway = DLAPIGateway() 
+    cam = DLAPICamera(gateway, model='stc', dirname='/home/deb/Documents/CMOS_Characterization/Quantum Efficiency/data/exposures')
+    cam.connect() 
     
     for t in duration: 
         for n in range(numExposes):
-            cam.takeDarks(t, numDarks=5)
+            cam.expose(exptime=t, imtype='dark', readout_mode=readout_mode, filename=f"{t}s_dark_{n}nm_{readout_mode}.fits") 
     print("Done taking darks.")
     return 
 
 if __name__ == '__main__':
-    # exp = [12,12,12]
-    m = Monochromator()
-    # cam = dfcore()
-    # p = Photodiode() 
+
+    # gateway = DLAPIGateway() 
+    # cam = DLAPICamera(gateway, model='sbig', dirname='/home/deb/Documents/CMOS_Characterization/Quantum Efficiency/data/exposures')
+    # cam.connect() 
+    # obj = cam.expose(1)
+    dur = [0.1, 0.2,0.3]
+    runCamera(dur) 
+
     
-    m.openShutter()
-    m.goWave(700) 
+    # ***Take Cam exposures***
+    
+    
+    
+    # exp = [12,12,12]
+    # runCamera(exp)
+    
+    
+    # m = Monochromator()
+    # cam = dfcore()
+    # p = Photodiode()
+     
+    
+    # m.openShutter()
+    # m.goWave(700) 
     
     # time.sleep(2)
     

@@ -20,7 +20,7 @@ class fitsLoader:
         """
         for filename in os.listdir(self.folderPath):
             # incase there is a non-fit file in the folder
-            if filename.endswith(".fit"):
+            if filename.endswith(".fits"):
                 filePath = os.path.join(self.folderPath, filename)
                 try:
                     with fits.open(filePath) as hdul:
@@ -42,7 +42,7 @@ class fitsLoader:
             _type_: data associated with header. 
         """
         all_files = os.listdir(self.folderPath)
-        fits_files = [file for file in all_files if file.endswith('.fit')]
+        fits_files = [file for file in all_files if file.endswith('.fits')]
 
         if not fits_files:
             print("No fits files in directory")
@@ -65,7 +65,7 @@ class fitsLoader:
             head (str): Header value to sort images by.
         """
         for filename in os.listdir(self.folderPath):
-            if filename.endswith(".fit"):
+            if filename.endswith(".fits"):
                 filePath = os.path.join(self.folderPath, filename)
                 try:
                     with fits.open(filePath) as hdul:

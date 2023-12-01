@@ -9,28 +9,121 @@ from scipy.optimize import curve_fit
 sys.path.append("..")
 import loadImage
 
+sys.path.append("../cam")
+from camera import DLAPICamera
+from gateway import DLAPIGateway
+from cam import camera, gateway
+
+
 class DC: 
-    def __init__(self, darkPath, biasPath = '-5.0C_highGain'):
+    def __init__(self, darkPath="", biasPath = '-5.0C_highGain'):
+        
         # Create dir path and load iamges
-        self.absPath = os.path.dirname(__file__)
-        self.fullPath = os.path.join(self.absPath, '..', 'frames', darkPath)
-        self.fitsLoader = loadImage.fitsLoader(self.fullPath)
-        # Load images with exposure time as key -> keyImages
-        self.fitsLoader.sortImages('EXPTIME')
-        self.diffDict = {} 
-        self.darkCurrents = {}
-        self.diff = [] 
-        # Load bias to create master bias 
-        self.fullPathBias = os.path.join(self.absPath, '..', 'frames', biasPath)
-        self.fitsLoaderBias = loadImage.fitsLoader(self.fullPathBias)
-        self.fitsLoaderBias.loadImages()
+        self.rootPath = os.path.dirname(os.path.dirname(__file__)) 
+        # self.fullPath = os.path.join(self.absPath, '..', 'frames', darkPath)
+        # self.fitsLoader = loadImage.fitsLoader(self.fullPath)
+        # # Load images with exposure time as key -> keyImages
+        # self.fitsLoader.sortImages('EXPTIME')
+        # self.diffDict = {} 
+        # self.darkCurrents = {}
+        # self.diff = [] 
+        # # Load bias to create master bias 
+        # self.fullPathBias = os.path.join(self.absPath, '..', 'frames', biasPath)
+        # self.fitsLoaderBias = loadImage.fitsLoader(self.fullPathBias)
+        # self.fitsLoaderBias.loadImages()
 
 
-    def fullFrameDC(self):
+    def takeBias(self, temp, readout_mode = 'High Gain'):
+        # Create new directory for given temperature
+        savedir = os.path.join(self.rootPath, 'data', 'dc', 'bias', str(temp))
+        if not os.path.exists(savedir):
+            os.makedirs(savedir)
+            hgPath = os.path.join(savedir, "High Gain")
+            lgPath = os.path.join(savedir, "Low Gain")
+            os.makedirs(hgPath)
+            os.makedirs(lgPath)
+        else: 
+            hgPath = os.path.join(savedir, "High Gain")
+            lgPath = os.path.join(savedir, "Low Gain")
+            
+        
+        # high/low gain adjust save directory 
+        if readout_mode == "High Gain":
+            savedir = hgPath
+        elif readout_mode == "Low Gain": 
+            savedir = lgPath
+        else:
+            print(f"Incorrect readout mode: {readout_mode}")
+            return        
+        # Create camera objectsss
+        gateway = DLAPIGateway() 
+        print(f"Images saved to: {savedir}")
+        cam = DLAPICamera(gateway, model='stc', dirname=savedir)
+        cam.connect() 
+        # Camera set point
+        cam.set_temperature(temp)
+        cam.start_cooling()
+        # Take Biases
+        for n in range(number): 
+            result = cam.expose(0, imtype='bias', readout_mode=readout_mode, filename=f"{temp}Cbias_{readout_mode}-{n}.fits")
+            # Check if exposure failed
+            if "Error." in result.description:
+                print(result.description)
+                return
+        
+        
+    def takeDarks(self, temp, expTime, number = 10, readout_mode = "High Gain"): 
+                # Create new directory for given temperature
+        savedir = os.path.join(self.rootPath, 'data', 'dc', 'dark', f"{str(temp)}C", f"{str(expTime)}s")
+        if not os.path.exists(savedir):
+            os.makedirs(savedir)
+            hgPath = os.path.join(savedir, "High Gain")
+            lgPath = os.path.join(savedir, "Low Gain")
+            os.makedirs(hgPath)
+            os.makedirs(lgPath)
+        else: 
+            hgPath = os.path.join(savedir, "High Gain")
+            lgPath = os.path.join(savedir, "Low Gain")
+            
+        
+        # high/low gain adjust save directory 
+        if readout_mode == "High Gain":
+            savedir = hgPath
+        elif readout_mode == "Low Gain": 
+            savedir = lgPath
+        else:
+            print(f"Incorrect readout mode: {readout_mode}")
+            return        
+        # Create camera objectsss
+        gateway = DLAPIGateway() 
+        print(f"Images saved to: {savedir}")
+        cam = DLAPICamera(gateway, model='stc', dirname=savedir)
+        cam.connect() 
+        # Camera set point
+        cam.set_temperature(temp)
+        cam.start_cooling()
+        # Take Biases
+        for n in range(number): 
+            result = cam.expose(imtype='dark', readout_mode=readout_mode, exptime=float(expTime), filename=f"{temp}Cbias_{readout_mode}-{n}.fits")
+            # Check if exposure failed
+            if "Error." in result.description:
+                print(result.description)
+                return
+            
+            
+    def fullFrameDC(self, temp1, temp2):
         """
         Test to calculate the dark current vs time for the entire image. 
         """
-        #Create master bais 
+        # Load Master
+        # 
+        # 
+        # 
+        # 
+        # 
+        # 
+        # 
+        # Create master bais 
         masterBias = np.stack(self.fitsLoaderBias.images, axis=0)
         masterBias = np.mean(masterBias)
 
@@ -81,7 +174,3 @@ class DC:
         plt.ylabel('Dark Current (e-)')
         plt.grid(True)
         plt.show()
-
-
-
-

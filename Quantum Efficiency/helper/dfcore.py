@@ -90,6 +90,6 @@ class dfcore:
         print(f"stdout: {stdout} stderr {stderr}")
 
          
-        
+    
         
         

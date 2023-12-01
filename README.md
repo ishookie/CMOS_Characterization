@@ -136,10 +136,25 @@ This works by finding the gain between all n images for a 48x48 pixel block. It 
 flat frames where pretty good actually (Here is one with a mean luminance ~1000): 
 ![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/72abdfb9-b631-494c-a5bf-414405d5347c)
 
+## Quantum Efficiency 
+Quantum Efficiency (QE) is the measure of how many incident photons are converted into electrons in a sensor. If a sensor was exposed to 100 photons and produced 70 electrons it would have a QE of 70%. 
+
+### Procedure
 
 
 
-# Setup
+# Software Setup
+First make sure Python is installed. All of the packages can be installed using the command: 
+
+Start up the virtual enviroment from the base directory with: 
+
+'''source venv/bin/activate'''
+
+Then install the required packages with: 
+
+'''pip -r requirments.txt'''
+
+# Hardware Setup
 I am using the SBIG STC-428 sCMOS camera from Difraction limited. 
 
 Connect the camera to power, the computer and then plug in the cable from the filter wheel into the "Aux" port. 
@@ -151,3 +166,5 @@ Then hit the "Setup Filter" option under "Camera 1" select **DL Imaging+FW** fro
 Finally hit "Connect" to set the Cooler temp hit "Cooler" under "Camera 1" 
 
 to take a photo go to the "Expose" tab and hit start when you have selected the desired settings. 
+
+
