@@ -4,6 +4,7 @@ from helper.dfcore import dfcore
 
 import sys 
 sys.path.append("../cam")
+# from cam import camera, gateway
 from camera import DLAPICamera
 from gateway import DLAPIGateway
 
@@ -46,7 +47,7 @@ def runPhotodiode(start=400, stepSize=100, file_name = 'photodiodeData'):
         readings = [] 
         
         # Get 5 minutes of readings in 1s intervals
-        for i in range(300):
+        for i in range(100):
             readings.append(photodiode.readData()) 
             time.sleep(1) 
             
@@ -55,19 +56,19 @@ def runPhotodiode(start=400, stepSize=100, file_name = 'photodiodeData'):
         
         data[wl] = readings
         
-        # Define the CSV file name
-        file_name += '.csv'  
-        filePath = f'{dirPath}/{file_name}'
+    # Define the CSV file name
+    file_name += '.csv'  
+    filePath = f'{dirPath}/{file_name}'
                 
-        # Write csv file 
-        with open(filePath, 'w', newline='') as file:
-            csv_writer = csv.writer(file)
-            # Write the header row with column names
-            csv_writer.writerow(['Wavelength', 'Readings'])
-            # Write data
-            for wavelength, readings in data.items():
-                for reading in readings:
-                    csv_writer.writerow([wavelength, reading])
+    # Write csv file 
+    with open(filePath, 'w', newline='') as file:
+        csv_writer = csv.writer(file)
+        # Write the header row with column names
+        csv_writer.writerow(['Wavelength', 'Readings'])
+        # Write data
+        for wavelength, readings in data.items():
+            for reading in readings:
+                csv_writer.writerow([wavelength, reading])
     print("Photodiode Readings Finished :)")
     return
     
@@ -93,12 +94,12 @@ def photodiodeDark(start=400, stepSize = 100, file_name = 'photodiode_dark'):
     dirPath = 'data/photodiode'
     
     for n in range(start, 700 + stepSize, stepSize):
-        photodiode.setWavelength(next) 
+        photodiode.setWavelength(n) 
         time.sleep(1)
         readings = [] 
         
         # Get 5 minutes of readings in 1s intervals
-        for i in range(300):
+        for i in range(100):
             readings.append(photodiode.readData()) 
             time.sleep(1) 
             
@@ -106,22 +107,22 @@ def photodiodeDark(start=400, stepSize = 100, file_name = 'photodiode_dark'):
             data[n] = []
         data[n] = readings
         # add csv extension to filename
-        file_name += '.csv'  
-        filePath = f'{dirPath}/{file_name}'
+    file_name += '.csv'  
+    filePath = f'{dirPath}/{file_name}'
        
         # Write csv file 
-        with open(filePath, 'w', newline='') as file:
-            csv_writer = csv.writer(file)
-            # Write the header row with column names
-            csv_writer.writerow(['Wavelength', 'Readings'])
-            # Write data
-            for wavelength, readings in data.items():
-                for reading in readings:
-                    csv_writer.writerow([wavelength, reading])
+    with open(filePath, 'w', newline='') as file:
+        csv_writer = csv.writer(file)
+        # Write the header row with column names
+        csv_writer.writerow(['Wavelength', 'Readings'])
+        # Write data
+        for wavelength, readings in data.items():
+            for reading in readings:
+                csv_writer.writerow([wavelength, reading])
         
 
 ## ADD CAMERA MODE HERE***
-def runCamera(duration, start=400, stepSize=100):
+def runCamera(duration, start=400, stepSize=100, readout_mode = 'High Gain'):
     """
     Take camera exposures.
 
@@ -143,7 +144,7 @@ def runCamera(duration, start=400, stepSize=100):
         for n in range(start, 700+stepSize, stepSize):
             wl = monochromator.goWave(n)
             time.sleep(2)
-            cam.expose(exptime=t, imtype='light', readout_mode='Low Gain', filename=f"{t}s_light_{n}nm_{readout_mode}.fits") 
+            cam.expose(exptime=t, imtype='light', readout_mode='High Gain', filename=f"{t}s_light_{n}nm_{readout_mode}.fits") 
             #cam.takeExposures(t,wavelength=n,numExposes=5)
 
 def takeDarks(duration, numExposes=5, readout_mode='Low Gain'):
@@ -155,7 +156,7 @@ def takeDarks(duration, numExposes=5, readout_mode='Low Gain'):
         numExposes (int, optional): Number of exposures to take at each duration. 
     """
     gateway = DLAPIGateway() 
-    cam = DLAPICamera(gateway, model='stc', dirname='/home/deb/Documents/CMOS_Characterization/Quantum Efficiency/data/exposures')
+    cam = DLAPICamera(gateway, model='stc', dirname='/home/deb/Documents/CMOS_Characterization/Quantum Efficiency/data/darks')
     cam.connect() 
     
     for t in duration: 
@@ -165,14 +166,14 @@ def takeDarks(duration, numExposes=5, readout_mode='Low Gain'):
     return 
 
 if __name__ == '__main__':
-
+    
     # gateway = DLAPIGateway() 
-    # cam = DLAPICamera(gateway, model='sbig', dirname='/home/deb/Documents/CMOS_Characterization/Quantum Efficiency/data/exposures')
+    # cam = DLAPICamera(gateway, model='stc', dirname='/home/deb/Documents/CMOS_Characterization/Quantum Efficiency/data')
     # cam.connect() 
-    # obj = cam.expose(1)
-    dur = [0.1, 0.2,0.3]
-    runCamera(dur) 
-
+    # cam.expose(exptime=1, imtype='dark', readout_mode='High Gain', filename=f"{2}s_dark_{2}nm_{2}.fits") 
+    # dur = [10, 12, 15]
+    # takeDarks(dur) 
+    # photodiodeDark()
     
     # ***Take Cam exposures***
     
@@ -182,13 +183,9 @@ if __name__ == '__main__':
     # runCamera(exp)
     
     
-    # m = Monochromator()
-    # cam = dfcore()
-    # p = Photodiode()
-     
-    
-    # m.openShutter()
-    # m.goWave(700) 
+    m = Monochromator()
+    wl = m.goWave(500) 
+    print(wl) 
     
     # time.sleep(2)
     

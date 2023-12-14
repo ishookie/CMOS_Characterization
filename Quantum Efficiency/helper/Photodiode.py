@@ -26,7 +26,7 @@ class Photodiode:
         self.disableEcho()
         time.sleep(0.5)
         # Turn attenuation on
-        self.attenuationOn()
+        self.attenuationOff()
         time.sleep(0.5)
         # Set Range to R4
         self.setRange()
@@ -71,15 +71,15 @@ class Photodiode:
         """
         Set the measurment range.
         """
-        self.write("R1")
+        self.write("R0")
         return 
     
         
-    def attenuationOn(self):
+    def attenuationOff(self):
         """
         Turn on the detector-attenuation combo.
         """
-        self.write("A1")
+        self.write("A0")
         return 
         
         

@@ -4,7 +4,6 @@ import os
 import sys
 from astropy.stats import sigma_clip
 from astropy.io import fits
-from scipy.stats import sigmaclip 
 from scipy.ndimage import uniform_filter
 
 sys.path.append("..")
@@ -85,11 +84,10 @@ class RON:
         Take Bias images. 
 
         Args:
-            temp (_type_): Temperature of sensor to take data at. 
+            temp (int): Temperature of sensor to take data at. 
             number (int, optional): Number of bias frames to take. Defaults to 10.
             readout_mode (str, optional): Readout mode of sensor either: "High Gain" or "Low Gain". Defaults to "High Gain".
         """
-
         # Create new directory for given temperature
         savedir = os.path.join(self.rootPath, 'data', 'ron', str(temp))
         if not os.path.exists(savedir):
@@ -101,7 +99,6 @@ class RON:
         else: 
             hgPath = os.path.join(savedir, "High Gain")
             lgPath = os.path.join(savedir, "Low Gain")
-            
         
         # high/low gain adjust save directory 
         if readout_mode == "High Gain":
@@ -128,9 +125,7 @@ class RON:
                 print(result.description)
                 return
 
-        
-        
-
+    
     def calcRON(self, dataPath, plotName, binning=1):
         """
         Calculates RON by subtracting the master from individual biases.
@@ -150,11 +145,10 @@ class RON:
         biasPath = os.path.join(self.rootPath, 'data', 'ron', dataPath)
         biasLoader = loadImage.fitsLoader(biasPath)
         biasFrames = biasLoader.loadImages()
-
+        
         # Calculate STD
         stack = np.stack(biasFrames, axis=0)
         finish = stack - masterBias
-        
         finish = np.std(finish, axis=0)
         finish /= np.sqrt(2) 
         
@@ -171,9 +165,7 @@ class RON:
             data (np array): Array of pixel values representing the readout noise 
             plotName (str): Name to prefix plot file names with.
             binning (int): square binning size for heatmap. Defaults to 1
-        """
-        
-                        
+        """                        
         # Print various statistics 
         print(f"Min Value: {np.min(data)}")
         print(f"Max Value: {np.max(data)}")
@@ -187,7 +179,6 @@ class RON:
         plt.ylabel('log(count)')
         plt.yscale('log')
         plt.savefig(os.path.join(self.plotPath, f"{plotName}_histogram.png"))
-
         
         # Create a heatmap 
         data = uniform_filter(data, size=binning, mode='constant')[::binning, ::binning]
@@ -211,8 +202,11 @@ class RON:
         n = (zScore**2 * std**2) / MOE**2 
         print(n) 
 
+
     def marginOfError(self, zScore=1.96, n=545):
-        
+        """
+        Helper function to calculate the margin of error for a given number of biases. 
+        """
         self.calcRON()
         std = np.mean(np.sqrt(self.clipped))
         MOE = np.sqrt((zScore**2 * std**2) / n)

@@ -48,11 +48,11 @@ def loadFrames(exposurePath='data/exposures/time1', darkPath = 'data/darks'):
     # Load light frames (12s exp)
     fullPathLight = os.path.join(absPath, exposurePath)
     lightFrames = loadImage.fitsLoader(fullPathLight) 
-    lightFrames.loadByFilename("nm") 
+    lightFrames.loadByFilename('light_', 'wavelength') 
     # Load dark frames
     fullPathDark = os.path.join(absPath, darkPath)
     darkFrames = loadImage.fitsLoader(fullPathDark)
-    darkFrames.loadByFilename("s_")
+    darkFrames.loadByFilename('dark_', 'exposure_time')
     return lightFrames.keyImages, darkFrames.keyImages
 
     
@@ -130,8 +130,8 @@ def subFrames(lightFrames: dict, darkFrames: dict):
         # print(f"Average value: {average_value}")
     return scienceImages
         
-
-def calcSensorTerm(scienceImages: dict, eGain = 5.419037, expTime=7):
+#eGain = 5.419037
+def calcSensorTerm(scienceImages: dict, eGain = 2.3, expTime=7):
     """
     Calc signal value by taking summing all pixels 
     then multiplying by eGain.
@@ -144,6 +144,7 @@ def calcSensorTerm(scienceImages: dict, eGain = 5.419037, expTime=7):
     """
     sensorTerm = {} 
     for wavelength, image in scienceImages.items():
+        print(wavelength)
         sum = np.sum(image) * eGain # sum the data
         sum = sum / expTime # divide by exposure time
         # Round wavelength to integer
@@ -200,7 +201,7 @@ def calcQE(sensorTerm, photodiodeTerm, printData=True, plot=True):
     # Divide values at each wavelength and store the result
     for wavelength in photodiodeTerm:
         if wavelength in sensorTerm:
-            result = (sensorTerm[wavelength] / photodiodeTerm[wavelength]) * 100
+            result = (sensorTerm[wavelength] / photodiodeTerm[wavelength]) * 1000 * 10
             results[wavelength] = result
 
     if printData: 
@@ -220,7 +221,7 @@ def calcQE(sensorTerm, photodiodeTerm, printData=True, plot=True):
         plt.ylabel("QE (%)")
         plt.grid(True)
         # Save Plot
-        plt.savefig("QE.png")
+        plt.savefig("QE_2Gain.png")
         
     return results
 

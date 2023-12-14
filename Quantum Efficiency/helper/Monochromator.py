@@ -97,9 +97,9 @@ class Monochromator:
         self.write("WAVE?")
         # Super scuffed way of getting most recent response 
         # Could also use a separate thread to keep track but I AM LAZY!>!>!
-        self.ser.readline()
+        # self.ser.readline()
         response = self.ser.readline().decode(self.encoding).strip()
-        return response
+        return round(float(response))
     
     def readWavelength(self):
         self.write("WAVE?")

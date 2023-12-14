@@ -2,6 +2,7 @@ import os
 import numpy as np 
 from astropy.io import fits
 from collections import OrderedDict
+import re
 
 
 class fitsLoader:
@@ -51,7 +52,7 @@ class fitsLoader:
             header = fitsFile[0].header
             result = header.get(str)
             if not result: 
-                print(f"Argument {str} not found in fits header")
+                print(f"Argument {str} not found in fits header for image: {self.folderPath}\n for image: {fits_files[0]}")
             return result
         
 
@@ -83,43 +84,49 @@ class fitsLoader:
         self.keyImages = OrderedDict(sorted(self.keyImages.items()))
         return self.keyImages
 
-    def loadByFilename(self, delimiter: str): 
+    def loadByFilename(self, delimiter: str, extraction_type: str):
         """
-        Load fits images by filename. Delimiter is where the string is split. i.e:
-        filename: 7s_0.fits
-        delimiter: s_
-        results: 7
-        Used for loading images taken in QE testing. 
-        
-        Args: 
-            delimiter (str): delimiter to parse filename. 
-        
+        Load fits images by filename. Delimiter is where the string is split.
+        Extraction type can be either 'wavelength' or 'exposure_time'.
+        Used for loading images taken in QE testing.
+
+        Args:
+            delimiter (str): delimiter to parse filename.
+            extraction_type (str): type of information to extract ('wavelength' or 'exposure_time').
+
         Returns:
             self.keyImages (dict): Sorted dictionary of numpy arrays
-            containing pixel information. 
+            containing pixel information.
         """
         for filename in os.listdir(self.folderPath):
-            # incase there is a non-fit file in the folder
+            # in case there is a non-fit file in the folder
             if filename.endswith(".fits"):
-                # Get wavelength from filename
-                wavelength = filename.split(delimiter)[0]
-                filePath = os.path.join(self.folderPath, filename)
-                try:
-                    with fits.open(filePath) as hdul:
-                        data = hdul[0].data
-                        self.images.append(data)
-                        
-                        if wavelength not in self.keyImages:
-                            self.keyImages[wavelength] = []
+                # Extract information from filename using regular expression
+                if extraction_type == 'wavelength':
+                    pattern = rf'\d+s_{delimiter}(\d+)nm'
+                elif extraction_type == 'exposure_time':
+                    pattern = rf'(\d+)s_{delimiter}\d+nm'
+                elif extraction_type == 'temp':
+                    pattern = rf'(-?\d+)C_{delimiter}'
 
-                        self.keyImages[wavelength].append(data)
-                except Exception as e:
-                    print(f"Error reading {filePath}: {str(e)}")
-        
-        # Sort dic by wavelength lowest -> highest
+                match = re.search(pattern, filename)
+                if match:
+                    info = match.group(1)
+                    filePath = os.path.join(self.folderPath, filename)
+                    try:
+                        with fits.open(filePath) as hdul:
+                            data = hdul[0].data
+                            self.images.append(data)
+                            if info not in self.keyImages:
+                                self.keyImages[info] = []
+                            self.keyImages[info].append(data)
+                    except Exception as e:
+                        print(f"Error reading {filePath}: {str(e)}")
+
+        # Sort dict by information (either wavelength or exposure time) lowest -> highest
         self.keyImages = {k: v for k, v in sorted(self.keyImages.items())}
         return self.keyImages
-        
+
 
 
     def printDict(self):
