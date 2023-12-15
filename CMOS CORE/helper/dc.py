@@ -5,12 +5,9 @@ import os
 import sys
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-<<<<<<< HEAD
 from astropy.stats import sigma_clip
 from astropy.io import fits
 import time
-=======
->>>>>>> e7b5debab4b01006faadf77de691d15f35bafa0f
 
 sys.path.append("..")
 import loadImage
@@ -19,7 +16,6 @@ sys.path.append("../cam")
 from camera import DLAPICamera
 from gateway import DLAPIGateway
 from cam import camera, gateway
-
 
 class DC: 
     def __init__(self, darkPath="", biasPath = '-5.0C_highGain', figureName='dark_current_plot_run3'):
