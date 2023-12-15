@@ -5,9 +5,12 @@ import os
 import sys
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+<<<<<<< HEAD
 from astropy.stats import sigma_clip
 from astropy.io import fits
 import time
+=======
+>>>>>>> e7b5debab4b01006faadf77de691d15f35bafa0f
 
 sys.path.append("..")
 import loadImage
