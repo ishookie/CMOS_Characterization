@@ -17,7 +17,7 @@ from cam import camera, gateway
 
 class CHARGEPERSISTENCE: 
 
-    def __init__(self, numBias=300, figureName='ChargePersistence_datalabel2'):
+    def __init__(self, numBias=300, figureName='ChargePersistence_summed_test'):
         """
         Init for the charge persistence class. 
 
@@ -161,14 +161,14 @@ class CHARGEPERSISTENCE:
             try:
                 with fits.open(filePath) as hdul:
                     data = hdul[0].data
-                    meanCounts.append(np.mean(data))
+                    meanCounts.append(np.sum(data))
             except Exception as e:
                 print(f"Error reading {filePath}: {str(e)}")
  
         # fills a list up to numBias in 1 increments. Time list.
         times = [i for i in range(1, self.numBias+1)]    
         # Print first 5 values and times
-        print(f"Mean Values: {meanVals[:5]}")
+        print(f"Mean Values: {meanCounts[:5]}")
         print(f"Times: {times[:5]}")
         # Plot values
         self.plotPersistence(meanCounts, times)

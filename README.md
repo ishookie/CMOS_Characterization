@@ -20,45 +20,32 @@ CMOS sensors are different in that the instead of a single readout circuit and A
 ![ccd vs cmos diagram](https://www.testandmeasurementtips.com/wp-content/uploads/2019/05/ccd-cmos-image-sensors.jpg) 
 
 ## Readout Noise RON
-Located in RON_CMOS directory. 
+Located in CMOS CORE/helper directory. 
 
 This is the noise introduced through the readout circitry, mainly the preamplifier and ADC. Usually measured in e- RMS. Follows a skewed histogram distribution as opposed to CCD sensors which a follow a guassian one.
 
 ### Procedure 
-1. Take N bias frames (0s exposure shutter closed) 
-2. For every pixel of coordinate (x,y) calculate: $\sigma$ between the N frames
-3. Repeat for every pixel in the frame. This results in an array containing the RON of each pixel
-4. Remove "hot" pixels by performing 3-sigma-clipping on the RON array. 
+1. Take 100 bias frames (0s exposure shutter closed) 
+2. Perform 3-sigma clipping on each frame, replacing clipped values with the mean of the frame. 
+3. Stack them and take pixel wise mean to create a master bias. 
+4. Take 545 more bias frames.
+5. Subtract the master bias from each of the 545 new bias frames. 
+6. For every pixel of coordinate (x,y) calculate: $fract{\sigma}{\sqrt{2}}$ between the N frames.
+7. Repeat for every pixel in the frame. This results in an array containing the RON of each pixel 
 
 ### Analysis 
-Currently I have not been able to get a reasonable number for the gain so to convert the RON noise figures from ADU to e- I will be using the stock gain value taken from diffraction's website which is **1.2 e-/ADU** on the high gain mode. 
-Okay so for N = 545 I tested a few different ways: 
+For the RON calculation I use the standard deviation over sqrt(2) this is the RMS value not the mean. I chose to do this as the RMS is a better indication of the average due to the skewed histogram distribution. 
 
 1. $\text{RON} = \frac{\sigma}{\sqrt{2}}$
 
 This gives **RON = 1.059 ADU -> 1.27 e-** The histogram is shown below:
 
 ![RON-stdOVERsqrt(2)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/13eb2e82-4d01-44c8-af9d-a07c169d5a51)
-
-2. $\sqrt{\sigma}$
-
-This gives **RON = 1.497 ADU -> 1.796 e-** the histogram is shown below: 
-
-![RON-sqrt(std)](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/761a9b22-af47-44f6-ba06-6ba4cf87b881)
-
-
  
-
-**-5.0C (High Gain Mode)**
-- Min Value: 0.908 ADU
-- Max Value: 2.448 ADU
-- **Mean Value: 1.490 ADU**
-
-RON = 1.490 ADU * 1.2 e-/ADU = **1.778 e-**
 
 $\text{Percent Error} = \frac{1.788-1.9}{1.9} = \text{5.895 Percent}$
 
-The bottleneck of this calucation is the size of memory. During the subtraction the result is a numpy 3D array of size n x 2208 x 3216. With a array of 64 bit floats. The computer I am using has 32 GB RAM -> assuming 31GB usage the most images I can compile is 545. 
+The bottleneck of this calucation is the size of memory. During the subtraction the result is a numpy 3D array of size n x 2208 x 3216. With a array of 64 bit floats. The computer I am using has 32 GB RAM -> assuming 31GB usage the most images I can compile is 545. This number will be much lower when running on the pi. This is because when images are loaded their 2d pixel arrays are appended to a list. Optimizations could be made to calculate the RON in batches adding to a running total as they are loaded. 
 
 Running the calculation for **545 Frames at -10.0C** I get the following results:
 - Min: 1.194192382537768
@@ -74,12 +61,6 @@ Running the calculation for the same **545 frames at -10.0C** I get the followin
 - **Mean: 1.4971725940704346**
 
 ![545-float32RON](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/1ba7eb21-4778-4ab4-b7e6-8e2814d15e80)
-
-### Notes to Myself
-Pixel data is stored as an uint16 ($2^{16} = 65,536$ total values) an issue arrives when I want to subtract bias frames from eachother to get a master bias. I end up getting a negative value for some pixels which results in wrap around overflow and blows up the stdev of the frame. 
-  - need to look into **BSCALE** and **BZERO** which I believe is automatic scaling for fits images and may be the issue of this problem?
-  - could also need to introduce an offset before I do the subtractions. How would I choose the offset? would it just be 65,536 to account for a worse case scenario? but then more overflow would occur and I would need to account for that with an array that has uint32.
-
     
 ## Dark Current
 Dark current is the charge buildup on the sensor as a result of heat. This process is light independent noise. For example a specification of 0.5 e-/p/s means every 1 e-/pixel generated per 2 seconds exposure time. This can be reduced through cooling. 
@@ -139,7 +120,27 @@ flat frames where pretty good actually (Here is one with a mean luminance ~1000)
 ## Quantum Efficiency 
 Quantum Efficiency (QE) is the measure of how many incident photons are converted into electrons in a sensor. If a sensor was exposed to 100 photons and produced 70 electrons it would have a QE of 70%. 
 
+### Equipment
+Light Source - Newport 780 Lamp Supply: 
+Just a basic lamp and power source to input light in to the monochromator. The main thing is that it has to monochromatic meaning its relativly stable and outputs all wavelengths of light. 
+
+Monochromator - Oriel 1/8 m Cornerstone Monochromator Model 74000:
+This is used to select certain wavelengths of light. It has a diffraction grating inside which moves to output only certain wavelengths. I am only concerned with visible wavelengths. (400-700nm) 
+
+Lens - THORLABS AC254 (D = 25.4mm, F = 45.0mm): 
+A simple lens is used. This is to focus light coming out of the monochromator onto the DUT. It should have a coating on it permissible to visible wavelengths 400-700nm
+
+Photodiode - Newport Model 818-SL:
+A calibrated photodiode that outputs a power in watts based upon incident light. 
+
+Powermeter - Newport Optical Power Meter Model 1830-C:
+Used to read values from the photodiode.  
+
+### Setup 
+
 ### Procedure
+
+## Linearity 
 
 
 
