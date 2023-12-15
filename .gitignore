@@ -15,6 +15,7 @@ ronFigures/
 *.csv
 dfcore
 *.png
+*.zip
 
 # Distribution / packaging
 .Python
