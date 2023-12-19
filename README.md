@@ -236,11 +236,12 @@ Salt and Pepper Noise also called Random Telegraph Noise (RTN) is discrete but r
 
 ### Results 
 The first result is searching for pixels with a value > mean + 3*std: 
-<img width="301" alt="image" src="https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/4912e1d6-56ff-4120-bd35-8e54666ac32e">
+
+<img alt="image" src="https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/4912e1d6-56ff-4120-bd35-8e54666ac32e">
 
 The analysis was done again this time searching for pixels with a value > mean + 12*std:
 
-<img width="322" alt="image" src="https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/069aa957-11ab-4cc5-be00-b03fab6fc985">
+<img alt="image" src="https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/069aa957-11ab-4cc5-be00-b03fab6fc985">
 
 In both the clustering of average values in the center can be seen. Variation is mainly caused by readout noise here. The outliers are most likely due to S&P noise. In the second image the S&P noise can be seen clustering around 220 ADU.
 
