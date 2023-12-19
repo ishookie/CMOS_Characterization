@@ -2,7 +2,7 @@ import sys
 import time
 
 # sys.path.append("..")
-from helper import gain, dc, ron, linearity, chargePersistence
+from helper import gain, dc, ron, linearity, chargePersistence, saltnPepper
 
 def testRON(biasPath, figureName):
     """
@@ -84,6 +84,19 @@ def calcChargePersistence():
     """
     test = chargePersistence.CHARGEPERSISTENCE()
     test.calcPersistence() 
-    
 
-calcChargePersistence() 
+#----------------SALT AND PEPPER---------------------------------------------------------------
+
+def testSaltnPepper():
+    """
+    Takes n biases and saves them to the saltnPepper data folder. 
+    """
+    test = saltnPepper.SALTNPEPPER()
+    test.takeBias(temp=-5, number=100)
+
+def calcSaltnPepper():
+    test = saltnPepper.SALTNPEPPER()
+    test.calcSaltnPepper() 
+
+calcSaltnPepper() 
+#testSaltnPepper()

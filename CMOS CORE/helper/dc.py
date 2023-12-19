@@ -24,17 +24,7 @@ class DC:
         self.rootPath = os.path.dirname(os.path.dirname(__file__)) 
         self.outputDir = os.path.join(os.path.dirname(__file__), '..', 'plots', 'dc_plots')
         self.plotPath = os.path.join(self.outputDir, f'{figureName}.png')
-        # self.fullPath = os.path.join(self.absPath, '..', 'frames', darkPath)
-        # self.fitsLoader = loadImage.fitsLoader(self.fullPath)
-        # # Load images with exposure time as key -> keyImages
-        # self.fitsLoader.sortImages('EXPTIME')
-        # self.diffDict = {} 
-        # self.darkCurrents = {}
-        # self.diff = [] 
-        # # Load bias to create master bias 
-        # self.fullPathBias = os.path.join(self.absPath, '..', 'frames', biasPath)
-        # self.fitsLoaderBias = loadImage.fitsLoader(self.fullPathBias)
-        # self.fitsLoaderBias.loadImages()
+
         
     def test(self, expTime, temp, readout_mode='High Gain'): 
         gateway = DLAPIGateway() 
