@@ -1,9 +1,13 @@
 # Characterizing sCMOS sensors
 This repository contains code to help characterize and identify noise and other secondary effects that impact sCMOS sensors particuarly for use in astronomy.
   1. [CCD vs CMOS](#ccd-vs-cmos)
-  2. [Readout Noise](#readout-noise-ron)
-  3. [Dark Current](#dark-current)
-  4. [Gain](#gain) 
+  2. [Silicon Defects](#silicon-defects)
+  3. [Readout Noise](#readout-noise-ron)
+  4. [Dark Current](#dark-current)
+  5. [Gain](#gain)
+  6. [Linearity](#linearity)
+  7. [Charge Persistence](#charge-persistence)
+  8. [Salt & Pepper Noise (Random Telegraph Noise)](#salt-and-pepper-noise)
 
 ## CCD vs CMOS 
 CCD (Charge-Coupled Device) has been the most prevalent imaging sensor type for use in astronomy. In recent years CMOS (Complementary Metal-Oxide-Semiconductor) has dominated the consumer market. As a result CCD sensors are more expensive, harder to find and have less support than their CMOS counterparts. This section details how each sensor works as well as their differences in respect to use in astronomy. 
@@ -18,6 +22,32 @@ CMOS sensors are different in that the instead of a single readout circuit and A
   3. Noise properties are varied from pixel to pixel which makes characterizing and removing noise a more complex issue. 
 
 ![ccd vs cmos diagram](https://www.testandmeasurementtips.com/wp-content/uploads/2019/05/ccd-cmos-image-sensors.jpg) 
+
+# Silicon Defects
+Most of the types of noise touched on here are caused due to manufacturing defects when making the semiconductors within a sensor. In an ideal scenario when a certain number of photons hit a sensor, that energy causes electrons within a semiconductor to jump from the valence band to the conduction band. In reality, defects in the silicon cause intermediary bands (traps) in-between the conduction and valence. These bands allow electrons to jump to the conduction band in multiple steps of lower energy. This process is much easier than making it in a single jump. The resulting effect is that the relationship between the drain current and gate voltage in a MOS transistor which discretely increases or decreases the offset This results in some pixels being much more sensitive than others. This effect is also what causes dark current as purely thermal energy can cause the jump between bands.  
+
+ ![image](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/12a7fa6c-63f1-4767-8a26-4076d25f3c49)
+
+ A more concrete example on how this impacts the operation of FETS can be seen in the drain current equation: 
+
+ 
+$I_D = \frac{1}{2} \mu_n C_{ox} \frac{W}{L} \left(V_{GS} - V_{th}\right)^2 \$
+
+Where:
+
+$I_D$: Drain current. This is the current flowing from the drain to the source in a MOSFET, representing the flow of charge carriers.
+
+$\mu_n\$: Electron mobility in the channel. It represents the mobility of electrons in the semiconductor material, indicating how easily electrons can move in response to an electric field.
+
+$C_{ox}\$: Oxide capacitance per unit area. It represents the capacitance of the oxide layer in the MOSFET. It is a key parameter influencing the charge storage capacity.
+
+$\frac{W}{L}\$: Width-to-length ratio of the transistor. It reflects the physical dimensions of the MOSFET. The width (\(W\)) and length (\(L\)) of the transistor affect its electrical characteristics.
+
+$\(V_{GS} - V_{th})\$: Gate-source voltage minus the threshold voltage. This term represents the effective voltage applied to the MOSFET to control the channel. When this term is positive, the MOSFET is in the "on" state.
+
+Traps make it harder for electrons to move through the semiconductor as a result the Electron mobility will change which has a direct impact on $I_D$*
+
+* This is not nearly the entire view on how traps impact the operation of FETS. Semiconductor physics is a vast, confusing and hard subject which I am relatively inexperienced in. 
 
 ## Readout Noise RON
 Located in CMOS CORE/helper directory. 
@@ -137,12 +167,82 @@ Powermeter - Newport Optical Power Meter Model 1830-C:
 Used to read values from the photodiode.  
 
 ### Setup 
+The lamp is connected to the monochromator. A lens is then placed at the output of the monochromator to focus the output onto the DUT's. The photodiode and sensor are placed on a metal slider so they can easily be moved in and out of the light beam. The whole setup is then covered in dark fabric to reduce any ambient light. 
 
 ### Procedure
+1. Take exposures at around 80% of saturation across the visible light spectrum: 400nm, 500nm, 600nm and 700nm. 
+2. Take darks at same exposure time. 
+3. Repeat with photodiode Infront of lens recording the power output from the power meter. 
+4. The photodiode term is calculated as:
+5. 
+Photodiode Term =  \frac{pλ}{hc}
+
+Where: 
+p = Power in Watts (From the photodiode)
+λ = Wavelength in nm 
+h = Planks constant 
+c = speed of light 
+
+The sensor term can be calculated as: 
+
+Sensor Term = $\frac{ADU*G}{t}$
+
+Where: 
+ADU = Total counts of sensor in ADU
+G = gain of sensor
+t = exposure time 
+
+The final QE is calculated as: 
+
+QE = $\frac{Sensor Term}{Photodiode Term}$
+
 
 ## Linearity 
+Linearity is how sensors behave across different conditions. Particularly how a sensor behaves as it reaches saturation. Does the ratio of incident photons to released electrons remain linear across all saturation levels.
 
+### Procedure
+1. Take 30 darks with an exposure time varying from 0s to 120s. 
+2. For each dark calculate the mean pixel value in ADU.
+3. Graph mean ADU vs Time for all 30 frames.
 
+### Results
+The following figure shows the result from the experiment. 
+![LinearityTest2_2min_Plot](https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/ef58c934-ea9b-4fd9-960b-32f47b8f8410)
+
+It can be seen that the sensor is indeed linear. Since the sensor is 12 bit saturation occurs at 4096 ADU which is shown with the blue data points. 
+
+## Charge Persistence 
+Charge persistence looks at if chargers linger within the sensor from frame to frame. Will a pixel’s value be impacted if it was saturated in the immediately preceding frame.
+
+### Procedure
+1. Take a long light exposure so that all pixels are saturated. 
+2. Immediately close the shutter then start taking biases in 1s increments.
+3. Graph mean ADU vs time for the biases.
+
+### Results
+The following chart shows the results from the experiment:
+
+<img width="300" alt="image" src="https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/c292efb1-b82c-4314-9ccd-68460656d999">
+
+It appears that the first image taken after saturation has a slightly higher mean ADU. I would say this is still inconclusive as the variance in mean ADU is extremely small and further investigation should be done. 
+
+## Salt and Pepper Noise
+Salt and Pepper Noise also called Random Telegraph Noise (RTN) is discrete but random noise caused by manufacturing defects in silicon which create “traps” it results in more/less sensitive pixels than others.
+
+### Procedure 
+1. Take n bias frames. 100 in this case. 
+2. Identify a small region of interest (ROI (30x30 pixels) which contains some pixels with a much higher standard deviation.
+3. Graph the value of each pixel in ADU for each of the 100 frames.
+
+### Results 
+The first result is searching for pixels with a value > mean + 3*std: 
+<img width="301" alt="image" src="https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/4912e1d6-56ff-4120-bd35-8e54666ac32e">
+
+The analysis was done again this time searching for pixels with a value > mean + 12*std:
+
+<img width="322" alt="image" src="https://github.com/aidanmacnichol/CMOS_Characterization/assets/108359181/069aa957-11ab-4cc5-be00-b03fab6fc985">
+
+In both the clustering of average values in the center can be seen. Variation is mainly caused by readout noise here. The outliers are most likely due to S&P noise. In the second image the S&P noise can be seen clustering around 220 ADU.
 
 # Software Setup
 First make sure Python is installed. All of the packages can be installed using the command: 
